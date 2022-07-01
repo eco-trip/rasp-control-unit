@@ -72,16 +72,22 @@ public class DHT22v2 {
         
         now = System.nanoTime();
 		DigitalState state = sensor.state();
+        DigitalState next = state;
 		long val = 0, lastHi = now;
 		int read = 0;
+
+        boolean firstStateHigh = state == DigitalState.HIGH; // DEBUG
+        int stateChanges = 0;                                // DEBUG
 
 		//active polling for 10ms (5.5ms is enough according to datasheet)
 		while (System.nanoTime()-now < 10000000)
 		{
-			DigitalState next = sensor.state();
+			next = sensor.state();
 			//edge detection
 			if (state != next)
 			{
+                stateChanges++;
+
 				//if this is the beginning of a high interval
 				if (next == DigitalState.HIGH)
 					lastHi = System.nanoTime();
@@ -99,10 +105,15 @@ public class DHT22v2 {
 		}
 		sensor.shutdown(ctx);
 
+        console.println("---------------------------");
         console.println("Low sent = "+Math.round((lowSent-start)/1000)+" us");
         console.println("Delay 15ms = "+Math.round((delay15-lowSent)/1000)+" us");
         console.println("High sent = "+Math.round((highSent-delay15)/1000)+" us");
         console.println("Ready for input = "+Math.round((readyForInput-highSent)/1000)+" us");
+        console.println("Primo stato letto = "+(firstStateHigh?"HIGH":"LOW"));
+        console.println("Ultimo stato letto = "+(next == DigitalState.HIGH?"HIGH":"LOW"));
+        console.println("Numero cambiamenti rilevati = "+stateChanges);
+        
 		
         // check we read 40 bits (8bit x 5 ) + verify checksum in the last byte
 		// should be 40 but the first few bits are often missed and often equal 0
