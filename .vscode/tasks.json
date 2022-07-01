@@ -1,0 +1,26 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "gradle",
+			"id": "/root/repos/rasp-control-unitbuildpi4j-example-minimal",
+			"script": "build",
+			"description": "Assembles and tests this project.",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"project": "pi4j-example-minimal",
+			"buildFile": "/root/repos/rasp-control-unit/build.gradle",
+			"rootProject": "pi4j-example-minimal",
+			"projectFolder": "/root/repos/rasp-control-unit",
+			"workspaceFolder": "/root/repos/rasp-control-unit",
+			"args": "",
+			"javaDebug": false,
+			"problemMatcher": [
+				"$gradle"
+			],
+			"label": "gradle: build"
+		}
+	]
+}
