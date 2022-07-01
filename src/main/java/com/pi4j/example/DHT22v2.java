@@ -99,10 +99,10 @@ public class DHT22v2 {
 		}
 		sensor.shutdown(ctx);
 
-        // console.println("Low sent = "+Math.round((lowSent-start)/1000)+" us");
-        // console.println("Delay 15ms = "+Math.round((delay15-lowSent)/1000)+" us");
-        // console.println("High sent = "+Math.round((highSent-delay15)/1000)+" us");
-        // console.println("Ready for input = "+Math.round((readyForInput-highSent)/1000)+" us");
+        console.println("Low sent = "+Math.round((lowSent-start)/1000)+" us");
+        console.println("Delay 15ms = "+Math.round((delay15-lowSent)/1000)+" us");
+        console.println("High sent = "+Math.round((highSent-delay15)/1000)+" us");
+        console.println("Ready for input = "+Math.round((readyForInput-highSent)/1000)+" us");
 		
         // check we read 40 bits (8bit x 5 ) + verify checksum in the last byte
 		// should be 40 but the first few bits are often missed and often equal 0
