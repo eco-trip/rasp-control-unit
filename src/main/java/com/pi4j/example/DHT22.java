@@ -92,10 +92,10 @@ public class DHT22 {
 		}
 		input.shutdown(ctx);
 
-        System.out.println("Low sent = "+Math.round((lowSent-start)/1000)+" us");
-        System.out.println("Delay 15ms = "+Math.round((delay15-lowSent)/1000)+" us");
-        System.out.println("High sent = "+Math.round((highSent-delay15)/1000)+" us");
-        System.out.println("Ready for input = "+Math.round((readyForInput-highSent)/1000)+" us");
+        // console.println("Low sent = "+Math.round((lowSent-start)/1000)+" us");
+        // console.println("Delay 15ms = "+Math.round((delay15-lowSent)/1000)+" us");
+        // console.println("High sent = "+Math.round((highSent-delay15)/1000)+" us");
+        // console.println("Ready for input = "+Math.round((readyForInput-highSent)/1000)+" us");
 		
         // check we read 40 bits (8bit x 5 ) + verify checksum in the last byte
 		// should be 40 but the first few bits are often missed and often equal 0
@@ -109,9 +109,9 @@ public class DHT22 {
 			{
 				double temperature = ((((ti & 0x7f) << 8)+td)/10.)*((ti & 0x80) != 0 ? -1 : 1);
 				double humidity = ((hi << 8)+hd)/10.;
-				System.out.println("Humidity = " + humidity + " Temperature = " + temperature);
+				console.println("Humidity = " + humidity + " Temperature = " + temperature);
 			} else {
-                System.out.println("Data not good, skip");
+                console.println("Data not good, skip");
             }
 		}
     }
