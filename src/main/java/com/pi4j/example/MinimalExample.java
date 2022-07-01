@@ -143,7 +143,7 @@ public class MinimalExample {
         //     Thread.sleep(500 / (pressCount + 1));
         // }
 
-        final DHT22 dht = new DHT22(pi4j, 4);
+        final DHT22v2 dht = new DHT22v2(pi4j, 4);
 
         for (int i = 0; i < 20; i++) {
             Thread.sleep(2000);
