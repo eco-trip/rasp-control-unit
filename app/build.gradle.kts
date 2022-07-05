@@ -1,29 +1,23 @@
 plugins {
-    id 'java'
+    application
 }
 
-group = 'com.pi4j'
-version = '0.0.1'
-
-description = """Pi4J :: MINIMAL EXAMPLE :: Sample minimal project"""
-
-tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8'
+java {
+    modularity.inferModulePath.set(true)
 }
 
-plugins.withType(JavaPlugin).configureEach {
-    java {
-        modularity.inferModulePath = true
-    }
+application {
+    mainClass.set("com.pi4j.example.MinimalExample")
 }
 
-// Copy the Java modules, run script and JAR in the distribution directory
-tasks.register("copyDistribution", Copy) {
-    from configurations.default
-    from tasks.named('jar')
-    from layout.projectDirectory.file('assets/run.sh')
-    into layout.buildDirectory.dir('distribution')
+tasks.register<Copy>("copyDistribution") {
+    from(configurations.default)
+    from(tasks.named("jar"))
+    from(layout.projectDirectory.file("assets/run.sh"))
+    into(layout.buildDirectory.dir("distributions"))
 }
+
+
 tasks.named("build") {
     dependsOn("copyDistribution")
 }
@@ -41,7 +35,7 @@ dependencies {
     // implementation 'com.pi4j:pi4j-plugin-pigpio:2.1.1'
     // api fileTree(dir: 'lib', includes: ['*.jar'])
     implementation("com.jcraft:jsch:0.1.44-1")
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation(fileTree("libs"))
     /*
     implementation files('libs/pi4j-core.jar')
     implementation files('libs/pi4j-core-javadocs.jar')
