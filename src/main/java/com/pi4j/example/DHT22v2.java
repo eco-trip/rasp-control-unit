@@ -57,7 +57,7 @@ public class DHT22v2 {
 
         lowSent = java.lang.System.nanoTime();
         
-        delay(15);
+        delay(16);
 
         delay15 = java.lang.System.nanoTime();
 
@@ -75,18 +75,19 @@ public class DHT22v2 {
         DigitalState next = state;
 		long val = 0, lastHi = now;
 		int read = 0;
+        boolean isOne = false;
 
-        boolean firstStateHigh = state == DigitalState.HIGH; // DEBUG
-        int stateChanges = 0;                                // DEBUG
+        // boolean firstStateHigh = state == DigitalState.HIGH; // DEBUG
+        // int stateChanges = 0;                                // DEBUG
 
 		//active polling for 10ms (5.5ms is enough according to datasheet)
-		while (System.nanoTime()-now < 10000000)
+		while (System.nanoTime()-now < 7000000)
 		{
 			next = sensor.state();
 			//edge detection
 			if (state != next)
 			{
-                stateChanges++;
+                 // stateChanges++;
 
 				//if this is the beginning of a high interval
 				if (next == DigitalState.HIGH)
@@ -94,29 +95,35 @@ public class DHT22v2 {
 				//otherwise end of interval so measure length and store bit
 				else
 				{
+                    isOne = (System.nanoTime()-lastHi)/1000 > 55;
 					val = (val << 1);
-					read++;
 					//if bit is 1
-					if ((System.nanoTime()-lastHi)/1000 > 48)
+					if (isOne)
 						val++;
+
+                    read++;
+                    if (read>=41)
+                        break;
 				}
 				state = next;
 			}
 		}
+
 		sensor.shutdown(ctx);
 
-        console.println("---------------------------");
-        console.println("Low sent = "+Math.round((lowSent-start)/1000)+" us");
-        console.println("Delay 15ms = "+Math.round((delay15-lowSent)/1000)+" us");
-        console.println("High sent = "+Math.round((highSent-delay15)/1000)+" us");
-        console.println("Ready for input = "+Math.round((readyForInput-highSent)/1000)+" us");
-        console.println("Primo stato letto = "+(firstStateHigh?"HIGH":"LOW"));
-        console.println("Ultimo stato letto = "+(next == DigitalState.HIGH?"HIGH":"LOW"));
-        console.println("Numero cambiamenti rilevati = "+stateChanges);
+        // console.println("---------------------------");
+        // console.println("Low sent = "+Math.round((lowSent-start)/1000)+" us");
+        // console.println("Delay 15ms = "+Math.round((delay15-lowSent)/1000)+" us");
+        // console.println("High sent = "+Math.round((highSent-delay15)/1000)+" us");
+        // console.println("Ready for input = "+Math.round((readyForInput-highSent)/1000)+" us");
+        // console.println("Primo stato letto = "+(firstStateHigh?"HIGH":"LOW"));
+        // console.println("Ultimo stato letto = "+(next == DigitalState.HIGH?"HIGH":"LOW"));
+        // console.println("Numero cambiamenti rilevati = "+stateChanges);
+        // console.println("Reads = "+read);
         
 		
         // check we read 40 bits (8bit x 5 ) + verify checksum in the last byte
-		// should be 40 but the first few bits are often missed and often equal 0
+		// should be 41 (40 + 1 at start) but the first few bits are often missed and often equal 0
 		if (read >= 38)
 		{
 			int hi = (int)((val & 0xff00000000L) >> 32), hd = (int)((val & 0xff000000L) >> 24),
