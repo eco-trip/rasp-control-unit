@@ -128,7 +128,7 @@ public class MinimalExample {
         final BH1750 bh1 = new BH1750(pi4j, 0x5c, 1, "@bh1750-a");
         final BH1750 bh2 = new BH1750(pi4j, "@bh1750-b");
         final ADS1115 ads = new ADS1115(pi4j);
-        final CHY7 chy7 = new CHY7(pi4j, 27, console);
+        final CHY7 chy7 = new CHY7(pi4j, 27);
         final NCT_3950 nct = new NCT_3950(ads);
 
         for (int i = 0; i < 1000; i++) {

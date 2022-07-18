@@ -6,7 +6,7 @@ public class NCT_3950 {
     private static final double VCC = 3.3;
     private static final int BC = 3950; 
     private static final int TEMP_NOMINAL = 25;
-    private static final int R_NTC = 49500; // 50K ohm - 1% 
+    private static final int R_NTC = 50000; // 50K ohm - 1% 
     private final ADS1115 ads;
 
     public NCT_3950(final ADS1115 ads) {
