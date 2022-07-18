@@ -28,10 +28,6 @@ package com.pi4j.example;
  */
 
 import com.pi4j.Pi4J;
-import com.pi4j.io.gpio.digital.DigitalInput;
-import com.pi4j.io.gpio.digital.DigitalOutput;
-import com.pi4j.io.gpio.digital.DigitalState;
-import com.pi4j.io.gpio.digital.PullResistance;
 import com.pi4j.util.Console;
 
 /**
@@ -41,11 +37,6 @@ import com.pi4j.util.Console;
  * @version $Id: $Id
  */
 public class MinimalExample {
-
-    private static final int PIN_BUTTON = 24; // PIN 18 = BCM 24
-    private static final int PIN_LED = 4; // PIN 15 = BCM 22
-
-    private static int pressCount = 0;
 
     /**
      * This application blinks a led and counts the number the button is pressed. The blink speed increases with each
@@ -103,16 +94,6 @@ public class MinimalExample {
         PrintInfo.printProviders(console, pi4j);
 
         // Here we will create I/O interfaces for a (GPIO) digital output
-        // and input pin. We define the 'provider' to use PiGpio to control
-        // the GPIO.
-        // var ledConfig = DigitalOutput.newConfigBuilder(pi4j)
-        //         .id("led")
-        //         .name("LED Flasher")
-        //         .address(PIN_LED)
-        //         .shutdown(DigitalState.LOW)
-        //         .initial(DigitalState.LOW)
-        //         .provider("pigpio-digital-output");
-        // var led = pi4j.create(ledConfig);
 
         // var buttonConfig = DigitalInput.newConfigBuilder(pi4j)
         //         .id("button")
@@ -130,7 +111,7 @@ public class MinimalExample {
         // });
 
         // OPTIONAL: print the registry
-        // PrintInfo.printRegistry(console, pi4j);
+        PrintInfo.printRegistry(console, pi4j);
 
         // while (pressCount < 5) {
         //     if (led.equals(DigitalState.HIGH)) {
@@ -144,11 +125,19 @@ public class MinimalExample {
         // }
 
         final DHT22v2 dht = new DHT22v2(pi4j, 17);
+        final BH1750 bh1 = new BH1750(pi4j, 0x5c, 1, "@bh1750-a");
+        final BH1750 bh2 = new BH1750(pi4j, "@bh1750-b");
+        final ADS1115 ads = new ADS1115(pi4j);
+        final CHY7 chy7 = new CHY7(pi4j, 27, console);
+        final NCT_3950 nct = new NCT_3950(ads);
 
-        for (int i = 0; i < 20; i++) {
-            Thread.sleep(500);
+        for (int i = 0; i < 1000; i++) {
+            console.println("luminosity bh1: " + bh1.getLightIntensity());
+            console.println("luminosity bh2: " + bh2.getLightIntensity());
+            console.println("Liter per minute: " + chy7.getLiterPerMinute());
+            console.println("NCT: " + nct.getTemperature());
             dht.printTemperatureAndHumidity();
-        }
+        }   
 
         // System.out.println("Done!!");
 
