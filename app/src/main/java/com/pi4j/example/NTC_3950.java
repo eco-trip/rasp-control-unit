@@ -1,20 +1,22 @@
 package com.pi4j.example;
 
-public class NCT_3950 {
+import com.pi4j.example.ADS1115.AnalogChannel;
+
+public class NTC_3950 {
     private static final double KELVIN = 273.15;
     private static final int R1 = 10100; // 10K ohm + 1%
     private static final double VCC = 3.3;
     private static final int BC = 3950; 
     private static final int TEMP_NOMINAL = 25;
     private static final int R_NTC = 50000; // 50K ohm - 1% 
-    private final ADS1115 ads;
+    private final AnalogChannel channel;
 
-    public NCT_3950(final ADS1115 ads) {
-        this.ads = ads;
+    public NTC_3950(final AnalogChannel channel) {
+        this.channel = channel;
     }
 
     public double getTemperature() {
-        double voltage = ads.getAIn0();
+        double voltage = channel.getData();
         return computeNtcInCelsius(voltage, R1, VCC, BC, TEMP_NOMINAL, R_NTC);
     }
 

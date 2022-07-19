@@ -28,6 +28,8 @@ package com.pi4j.example;
  */
 
 import com.pi4j.Pi4J;
+import com.pi4j.example.ACS712.ScaleFactor;
+import com.pi4j.example.ADS1115.Channel;
 import com.pi4j.util.Console;
 
 /**
@@ -129,13 +131,16 @@ public class MinimalExample {
         final BH1750 bh2 = new BH1750(pi4j, "@bh1750-b");
         final ADS1115 ads = new ADS1115(pi4j);
         final CHY7 chy7 = new CHY7(pi4j, 27);
-        final NCT_3950 nct = new NCT_3950(ads);
+
+        final NTC_3950 nct = new NTC_3950(() -> ads.getDataByAnalogInput(Channel.A0_IN));
+        final ACSensor acs = new ACS712(ScaleFactor.ACS_20A, () -> ads.getDataByAnalogInput(Channel.A1_IN));
 
         for (int i = 0; i < 1000; i++) {
             console.println("luminosity bh1: " + bh1.getLightIntensity());
             console.println("luminosity bh2: " + bh2.getLightIntensity());
             console.println("Liter per minute: " + chy7.getLiterPerMinute());
-            console.println("NCT: " + nct.getTemperature());
+            console.println("Temperature (NTC): " + nct.getTemperature());
+            console.println("Current: " + acs.getCurrent());
             dht.printTemperatureAndHumidity();
         }   
 

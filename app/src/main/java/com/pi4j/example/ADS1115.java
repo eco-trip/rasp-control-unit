@@ -19,7 +19,7 @@ public class ADS1115 {
 
     private static final int CONFIG_REGISTER_TEMPLATE = 0b1000000110000011;
 
-    public enum GAIN {
+    public enum Gain {
         GAIN_6_144V(0b0000000000000000, 187.5/1_000_000),
         GAIN_4_096V(0b0000001000000000, 125.0/1_000_000),
         GAIN_2_048V(0b0000010000000000, 62.5/1_000_000),
@@ -28,7 +28,7 @@ public class ADS1115 {
         GAIN_0_256V(0b0000101000000000, 7.8125/1_000_000);
         private final int gain;
         private final double gainPerByte;
-        GAIN(int gain, double gainPerByte) {
+        Gain(int gain, double gainPerByte) {
             this.gain = gain;
             this.gainPerByte = gainPerByte;
         }
@@ -40,27 +40,45 @@ public class ADS1115 {
         }
     }
 
-    private static final int A0_IN = 0b0100000000000000;
-    private static final int A1_IN = 0b0101000000000000;
-    private static final int A2_IN = 0b0110000000000000;
-    private static final int A3_IN = 0b0111000000000000;
+    public enum Channel {
+        // enum constants calling the enum constructors 
+        A0_IN(0b0100000000000000),
+        A1_IN(0b0101000000000000),
+        A2_IN(0b0110000000000000),
+        A3_IN(0b0111000000000000);
+        
+        private final int value;
+
+        // private enum constructor
+        private Channel(int value) {
+            this.value = value;
+        }
+        
+        public int getValue() {
+            return value;
+        }
+    }
+
+    public interface AnalogChannel {
+       public double getData();
+    }
 
     private final int address;
     private final String deviceId;
     private final Context context;
     private final int i2cBus;
     private final I2C i2c;
-    private final GAIN gain;
+    private final Gain gain;
 
     public ADS1115(Context pi4j) {
-        this(pi4j, ADDRESS, GAIN.GAIN_4_096V, 1);
+        this(pi4j, ADDRESS, Gain.GAIN_4_096V, 1);
     }
 
     public ADS1115(Context pi4j, int address) {
-        this(pi4j, address, GAIN.GAIN_4_096V, 1);
+        this(pi4j, address, Gain.GAIN_4_096V, 1);
     }
 
-    public ADS1115(Context pi4j, int address, GAIN gain, int i2cBus) {
+    public ADS1115(Context pi4j, int address, Gain gain, int i2cBus) {
         this.address = address;
         this.deviceId = "ADS1115";
         this.context = pi4j;
@@ -93,28 +111,12 @@ public class ADS1115 {
     }
 
     
-    public GAIN getGain() {
+    public Gain getGain() {
         return gain;
     }
 
-    
-    public double getAIn0() {
-        return gain.gainPerByte * readIn(calculateConfig(A0_IN));
-    }
-
-    
-    public double getAIn1() {
-        return  gain.gainPerByte * readIn(calculateConfig(A1_IN));
-    }
-
-    
-    public double getAIn2() {
-        return  gain.gainPerByte * readIn(calculateConfig(A2_IN));
-    }
-
-    
-    public double getAIn3() {
-        return  gain.gainPerByte * readIn(calculateConfig(A3_IN));
+    public double getDataByAnalogInput(final Channel channel) {
+        return  gain.gainPerByte * readIn(calculateConfig(channel.value));
     }
 
     private int readIn(int config) {
