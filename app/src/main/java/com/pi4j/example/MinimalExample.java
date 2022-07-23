@@ -33,8 +33,9 @@ import com.pi4j.example.PN532.PN532;
 import com.pi4j.example.PN532.PN532I2C;
 import com.pi4j.example.PN532.Ndef.NdefMessage;
 import com.pi4j.example.PN532.Ndef.NdefRecord;
+import com.pi4j.example.ACS712.ScaleFactor;
+import com.pi4j.example.ADS1115.Channel;
 import com.pi4j.util.Console;
-
 
 
 /**
@@ -188,6 +189,7 @@ public class MinimalExample {
         final ADS1115 ads = new ADS1115(pi4j);
         final CHY7 chy7 = new CHY7(pi4j, 27);
         final NCT_3950 nct = new NCT_3950(ads);
+        final ACSensor acs = new ACS712(ScaleFactor.ACS_20A, () -> ads.getDataByAnalogInput(Channel.A1_IN));
         */
 
         nfcEmulate(pi4j);
@@ -197,7 +199,8 @@ public class MinimalExample {
             console.println("luminosity bh1: " + bh1.getLightIntensity());
             console.println("luminosity bh2: " + bh2.getLightIntensity());
             console.println("Liter per minute: " + chy7.getLiterPerMinute());
-            console.println("NCT: " + nct.getTemperature());
+            console.println("Temperature (NTC): " + nct.getTemperature());
+            console.println("Current: " + acs.getCurrent());
             dht.printTemperatureAndHumidity();
         }   
         */
