@@ -1,22 +1,16 @@
 package io.github.ecotrip.measures.water;
 
-import io.github.ecotrip.measures.Measure;
+import io.github.ecotrip.measures.CombinableMeasure;
 
-
-public class FlowRate extends Measure<Liter> {
+public class FlowRate extends CombinableMeasure<Liter> {
 
     private FlowRate(final Liter value) {
         super(value);
     }
 
     @Override
-    public FlowRate increase(Measure<Liter> measure) {
-        return null;
-    }
-
-    @Override
-    public FlowRate decrease(Measure<Liter> measure) {
-        return null;
+    public CombinableMeasure<Liter> combine(CombinableMeasure<Liter> with) {
+        return FlowRate.of(getValue().add(with.getValue()));
     }
 
     /**

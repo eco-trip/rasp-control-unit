@@ -6,7 +6,7 @@ import com.pi4j.io.i2c.I2CConfig;
 import com.pi4j.io.i2c.I2CProvider;
 import io.github.ecotrip.measures.ambient.Brightness;
 import io.github.ecotrip.sensors.Address;
-import io.github.ecotrip.sensors.Bus;
+import io.github.ecotrip.sensors.I2cBus;
 import io.github.ecotrip.sensors.DetectionFactory;
 import io.github.ecotrip.sensors.Sensor;
 import org.slf4j.Logger;
@@ -50,7 +50,7 @@ public class BrightnessSensor<ID> extends Sensor<ID, Brightness> {
     public static class Builder<ID> {
         private final Context ctx;
         private I2CProvider provider;
-        private Bus bus;
+        private I2cBus bus;
         private Address address;
         private ID identifier;
 
@@ -60,27 +60,27 @@ public class BrightnessSensor<ID> extends Sensor<ID, Brightness> {
             this.ctx = ctx;
         }
 
-        public Builder setBus(final Bus bus) {
+        public Builder<ID> setBus(final I2cBus bus) {
             this.bus = bus;
             return this;
         }
 
-        public Builder setAddress(final Address address) {
+        public Builder<ID> setAddress(final Address address) {
             this.address = address;
             return this;
         }
 
-        public Builder setProvider(final Pi4jProvider provider) {
+        public Builder<ID> setProvider(final Pi4jProvider provider) {
             this.provider = ctx.provider(provider.getValue());
             return this;
         }
 
-        public Builder setIdentifier(final ID identifier) {
+        public Builder<ID> setIdentifier(final ID identifier) {
             this.identifier = identifier;
             return this;
         }
 
-        public Builder setDetectionFactory(DetectionFactory<ID, Brightness> detectionFactory) {
+        public Builder<ID> setDetectionFactory(DetectionFactory<ID, Brightness> detectionFactory) {
             this.detectionFactory = detectionFactory;
             return this;
         }

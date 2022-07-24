@@ -7,7 +7,6 @@ import io.github.ecotrip.measures.Measure;
  */
 public class Brightness extends Measure<Integer> {
 
-
     private Brightness(final int value) {
         super(value);
     }
@@ -21,15 +20,5 @@ public class Brightness extends Measure<Integer> {
         return "Brightness{" +
                 "value=" + getValue() + " lux" +
                 '}';
-    }
-
-    @Override
-    public Brightness increase(Measure<Integer> measure) {
-        return Brightness.of(getValue() + measure.getValue());
-    }
-
-    @Override
-    public Brightness decrease(Measure<Integer> measure) {
-        return Brightness.of(getValue() - measure.getValue());
     }
 }

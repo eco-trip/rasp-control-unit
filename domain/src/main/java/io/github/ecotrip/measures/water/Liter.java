@@ -1,7 +1,5 @@
 package io.github.ecotrip.measures.water;
 
-import io.github.ecotrip.measures.InvalidMeasureException;
-
 import java.util.Objects;
 
 public class Liter {

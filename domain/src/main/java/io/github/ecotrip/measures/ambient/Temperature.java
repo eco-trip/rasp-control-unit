@@ -18,14 +18,4 @@ public class Temperature extends Measure<Double> {
                 "value=" + getValue() + " °C" +
                 '}';
     }
-
-    @Override
-    public Measure<Double> increase(Measure<Double> measure) {
-        return Temperature.of(getValue() + measure.getValue());
-    }
-
-    @Override
-    public Measure<Double> decrease(Measure<Double> measure) {
-        return Temperature.of(getValue() - measure.getValue());
-    }
 }

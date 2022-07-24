@@ -1,19 +1,11 @@
 import adapter.BrightnessSensor;
-import com.pi4j.Pi4J;
-import com.pi4j.util.Console;
-import io.github.ecotrip.measures.ambient.Brightness;
-import io.github.ecotrip.measures.ambient.Temperature;
-import io.github.ecotrip.sensors.Detection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 
 public class Controller<ID> {
-    private static int DETECTION_INTERVAL = 1000;
+    private static final int DETECTION_INTERVAL = 5;
     private static final Logger LOG = LoggerFactory.getLogger(Controller.class);
     private boolean isStopped = false;
     private final BrightnessSensor<ID> brightnessSensor;
@@ -22,18 +14,12 @@ public class Controller<ID> {
         this.brightnessSensor = brightnessSensor;
     }
 
-    public void execute() {
-        CompletableFuture.runAsync(() -> {
-            while(!isStopped) {
-                try {
-                    final Detection<ID, Brightness> detection = brightnessSensor.detect()
-                            .get(DETECTION_INTERVAL, TimeUnit.MILLISECONDS);
-                    LOG.info("Detected brightness: {}", detection);
-                } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
+    public CompletableFuture<Void> execute() {
+        Executor delayedExecutor = CompletableFuture.delayedExecutor(DETECTION_INTERVAL, TimeUnit.SECONDS);
+        return CompletableFuture.runAsync(() -> {
+            var detection = brightnessSensor.detect();
+            detection.thenAccept(d -> LOG.info("Detected brightness: {}", d));
+        }, delayedExecutor);
     }
 
     public void stop() {

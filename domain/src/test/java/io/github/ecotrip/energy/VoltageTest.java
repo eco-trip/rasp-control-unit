@@ -12,20 +12,6 @@ public class VoltageTest {
     final Voltage dummyVoltage = Voltage.of(5);
 
     @Test
-    public void testIncreaseVoltage() {
-        final Voltage dm2 = Voltage.of(5);
-        assertEquals(dummyVoltage.increase(dm2), Voltage.of(10));
-        assertEquals(dummyVoltage.getValue(), 5);
-    }
-
-    @Test
-    public void testDecreaseVoltage() {
-        final Voltage dm2 = Voltage.of(5);
-        assertEquals(dummyVoltage.decrease(dm2), Voltage.of(0));
-        assertEquals(dummyVoltage.getValue(), 5);
-    }
-
-    @Test
     public void testCreation() {
         final Voltage voltage = Voltage.of(Current.of(0.5), Resistance.of(2));
         assertEquals(voltage, Voltage.of(1.0));

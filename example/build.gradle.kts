@@ -1,9 +1,13 @@
 plugins {
-    id("java")
+    application
 }
 
 group = "org.example"
 version = "unspecified"
+
+application {
+    mainClass.set("Application")
+}
 
 repositories {
     maven {

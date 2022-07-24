@@ -13,9 +13,6 @@ public abstract class Measure<T> {
         return value;
     }
 
-    public abstract Measure<T> increase(Measure<T> measure);
-    public abstract Measure<T> decrease(Measure<T> measure);
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

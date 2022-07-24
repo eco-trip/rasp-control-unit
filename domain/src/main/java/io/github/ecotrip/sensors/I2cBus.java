@@ -2,16 +2,25 @@ package io.github.ecotrip.sensors;
 
 import java.util.Objects;
 
-public class Bus {
+public class I2cBus {
     private final int channel;
 
-    private Bus(final int value) {
+    private I2cBus(final int value) {
         this.channel = value;
     }
 
-    public static Bus of(final int value) {
-        return new Bus(value);
+    public static I2cBus of(final int value) {
+        return new I2cBus(value);
     }
+
+    public static I2cBus zero() {
+        return new I2cBus(0);
+    }
+
+    public static I2cBus one() {
+        return new I2cBus(1);
+    }
+
 
     public int getChannel() {
         return channel;
@@ -28,7 +37,7 @@ public class Bus {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Bus bus = (Bus) o;
+        I2cBus bus = (I2cBus) o;
         return getChannel() == bus.getChannel();
     }
 

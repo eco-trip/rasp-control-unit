@@ -1,8 +1,8 @@
 package io.github.ecotrip.measures.energy;
 
-import io.github.ecotrip.measures.Measure;
+import io.github.ecotrip.measures.CombinableMeasure;
 
-public class Current extends Measure<Double> {
+public class Current extends CombinableMeasure<Double> {
 
     private Current(final double value) {
         super(value);
@@ -25,12 +25,7 @@ public class Current extends Measure<Double> {
     }
 
     @Override
-    public Current increase(Measure<Double> measure) {
-        return Current.of(getValue() + measure.getValue());
-    }
-
-    @Override
-    public Current decrease(Measure<Double> measure) {
-        return Current.of(getValue() + measure.getValue());
+    public CombinableMeasure<Double> combine(CombinableMeasure<Double> with) {
+        return Current.of(getValue() + with.getValue());
     }
 }

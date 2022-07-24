@@ -30,14 +30,4 @@ public class Humidity extends Measure<Double> {
                 "value=" + getValue() + "%" +
                 '}';
     }
-
-    @Override
-    public Measure<Double> increase(Measure<Double> measure) {
-        return null;
-    }
-
-    @Override
-    public Measure<Double> decrease(Measure<Double> measure) {
-        return null;
-    }
 }

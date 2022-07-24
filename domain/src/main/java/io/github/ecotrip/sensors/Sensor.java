@@ -14,7 +14,7 @@ public abstract class Sensor<ID, M extends Measure<?>> extends Entity<ID> {
         this.detectionFactory = detectionFactory;
     }
 
-    public Future<Detection<ID, M>> detect() {
+    public CompletableFuture<Detection<ID, M>> detect() {
         final CompletableFuture<M> measure = measure();
         return measure.thenApply(m -> {
             if(!isMeasureValid(m)) {

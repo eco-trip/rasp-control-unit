@@ -12,16 +12,6 @@ public class Voltage extends Measure<Double> {
     }
 
     @Override
-    public Voltage increase(Measure<Double> measure) {
-        return Voltage.of(this.getValue() + measure.getValue());
-    }
-
-    @Override
-    public Voltage decrease(Measure<Double> measure) {
-        return Voltage.of(this.getValue() - measure.getValue());
-    }
-
-    @Override
     public String toString() {
         return "Voltage{" +
                 "value=" + getValue() + " volts" +
