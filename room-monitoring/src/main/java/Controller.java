@@ -10,16 +10,36 @@ public class Controller<ID> {
     private boolean isStopped = false;
     private final BrightnessSensor<ID> brightnessSensor;
 
+    private final Executor executor = CompletableFuture.delayedExecutor(DETECTION_INTERVAL, TimeUnit.SECONDS);
+
     public Controller(final BrightnessSensor<ID> brightnessSensor) {
         this.brightnessSensor = brightnessSensor;
     }
 
     public CompletableFuture<Void> execute() {
-        Executor delayedExecutor = CompletableFuture.delayedExecutor(DETECTION_INTERVAL, TimeUnit.SECONDS);
-        return CompletableFuture.runAsync(() -> {
-            var detection = brightnessSensor.detect();
-            detection.thenAccept(d -> LOG.info("Detected brightness: {}", d));
-        }, delayedExecutor);
+        final CompletableFuture<Void> future = new CompletableFuture<>();
+        schedule2(() -> brightnessSensor.detect().thenAccept(d -> {
+                LOG.info("Detected brightness: {}", d);
+                if(isStopped) {
+                    future.complete(null);
+                }
+            }
+        ));
+//        return schedule(() -> brightnessSensor.detect().thenAccept(d -> {
+//                LOG.info("Detected brightness: {}", d);
+//                execute();
+//            })true
+//        );
+        return future;
+    }
+
+    private CompletableFuture<Void> schedule(Runnable runnable) {
+        return CompletableFuture.runAsync(runnable, executor);
+    }
+
+    private void schedule2(Runnable runnable) {
+        final ScheduledExecutorService executor2 = Executors.newSingleThreadScheduledExecutor();
+        executor2.scheduleAtFixedRate(runnable,0, DETECTION_INTERVAL, TimeUnit.SECONDS);
     }
 
     public void stop() {
