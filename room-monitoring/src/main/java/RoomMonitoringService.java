@@ -4,6 +4,7 @@ import io.github.ecotrip.sensors.Detection;
 import io.github.ecotrip.sensors.Sensor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import utils.Futures;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
