@@ -4,18 +4,17 @@ import io.github.ecotrip.Entity;
 import io.github.ecotrip.measures.Measure;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
 
-public abstract class Sensor<ID, M extends Measure<?>> extends Entity<ID> {
-    private final DetectionFactory<ID, M> detectionFactory;
+public abstract class Sensor<ID> extends Entity<ID> {
+    private final DetectionFactory<ID> detectionFactory;
 
-    protected Sensor(final ID identifier, final DetectionFactory<ID, M> detectionFactory) {
+    protected Sensor(final ID identifier, final DetectionFactory<ID> detectionFactory) {
         super(identifier);
         this.detectionFactory = detectionFactory;
     }
 
-    public CompletableFuture<Detection<ID, M>> detect() {
-        final CompletableFuture<M> measure = measure();
+    public CompletableFuture<Detection<ID>> detect() {
+        final CompletableFuture<Measure> measure = measure();
         return measure.thenApply(m -> {
             if(!isMeasureValid(m)) {
                 return detectionFactory.createEmpty();
@@ -24,7 +23,7 @@ public abstract class Sensor<ID, M extends Measure<?>> extends Entity<ID> {
         });
     }
 
-    protected abstract CompletableFuture<M> measure();
+    protected abstract CompletableFuture<Measure> measure();
 
-    protected abstract boolean isMeasureValid(M measure);
+    protected abstract boolean isMeasureValid(Measure measure);
 }

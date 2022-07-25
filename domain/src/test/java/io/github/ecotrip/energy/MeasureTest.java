@@ -65,12 +65,4 @@ public class MeasureTest {
         assertEquals(v1, v1);
         assertNotEquals(v1, Voltage.of(3));
     }
-
-    @Test
-    public void testFlowRateByEquals() {
-        final FlowRate v1 = FlowRate.of(Liter.of(3));
-        assertEquals(v1, FlowRate.of(Liter.of(3)));
-        assertEquals(v1, v1);
-        assertNotEquals(v1, FlowRate.of(Liter.of(2.9)));
-    }
 }

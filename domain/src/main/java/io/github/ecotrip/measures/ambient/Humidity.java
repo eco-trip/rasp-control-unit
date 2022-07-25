@@ -6,7 +6,7 @@ import io.github.ecotrip.measures.Measure;
 /**
  * Humidity in %
  */
-public class Humidity extends Measure<Double> {
+public class Humidity extends Measure {
 
     private Humidity(final double value) throws InvalidMeasureException {
         super(value);

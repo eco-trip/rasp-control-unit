@@ -4,22 +4,22 @@ import io.github.ecotrip.measures.Measure;
 
 import java.util.function.Supplier;
 
-public class DetectionFactory<ID, M extends Measure<?>> {
+public class DetectionFactory<ID> {
     private final Supplier<ID> idGenerator;
 
     private DetectionFactory(final Supplier<ID> idGenerator) {
         this.idGenerator = idGenerator;
     }
 
-    public Detection<ID, M> create(final M measure) {
+    public Detection<ID> create(final Measure measure) {
         return Detection.of(idGenerator.get(), measure);
     }
 
-    public Detection<ID, M> createEmpty() {
+    public Detection<ID> createEmpty() {
         return Detection.empty(idGenerator.get());
     }
 
-    public static <ID, M extends Measure<?>> DetectionFactory<ID, M> of(final Supplier<ID> idGenerator) {
+    public static <ID> DetectionFactory<ID> of(final Supplier<ID> idGenerator) {
         return new DetectionFactory<>(idGenerator);
     }
 }

@@ -2,7 +2,7 @@ package io.github.ecotrip.measures.energy;
 
 import io.github.ecotrip.measures.Measure;
 
-public class Resistance extends Measure<Double> {
+public class Resistance extends Measure {
 
     private Resistance(final double value) {
         super(value);
@@ -15,6 +15,10 @@ public class Resistance extends Measure<Double> {
      */
     public static Resistance of(double ohms) {
         return new Resistance(ohms);
+    }
+
+    public static Resistance of(final Current current, final Voltage voltage) {
+        return Resistance.of(current.getValue() / voltage.getValue());
     }
 
     @Override

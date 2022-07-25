@@ -1,12 +1,16 @@
 import adapter.BrightnessSensor;
 import adapter.Pi4jProvider;
+import adapter.TemperatureSensor;
 import com.pi4j.Pi4J;
 import com.pi4j.util.Console;
 import engine.EngineFactory;
+import io.github.ecotrip.measures.Measure;
 import io.github.ecotrip.sensors.Address;
 import io.github.ecotrip.sensors.I2cBus;
 import io.github.ecotrip.sensors.DetectionFactory;
+import io.github.ecotrip.sensors.Sensor;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -18,7 +22,7 @@ public class Application {
 
         var pi4j = Pi4J.newAutoContext();
 
-        var sensor = new BrightnessSensor.Builder<UUID>(pi4j)
+        var brightnessSensor = new BrightnessSensor.Builder<UUID>(pi4j)
                 .setProvider(Pi4jProvider.LINUX_FS_I2C)
                 .setAddress(Address.of(0x23))
                 .setBus(I2cBus.one())
@@ -26,7 +30,14 @@ public class Application {
                 .setDetectionFactory(DetectionFactory.of(UUID::randomUUID))
                 .build();
 
-        RoomMonitoringService.of(List.of(sensor), EngineFactory.createScheduledExecutor()).start();
+        var ntcSensor = new TemperatureSensor.Builder<UUID>()
+                .setIdentifier(UUID.randomUUID())
+                .setDetectionFactory(DetectionFactory.of(UUID::randomUUID))
+                .build();
+
+        var sensors = List.of(brightnessSensor, ntcSensor);
+
+        RoomMonitoringService.of(sensors, EngineFactory.createScheduledExecutor()).start();
 
         pi4j.shutdown();
     }

@@ -2,15 +2,15 @@ package io.github.ecotrip.measures.water;
 
 import io.github.ecotrip.measures.CombinableMeasure;
 
-public class FlowRate extends CombinableMeasure<Liter> {
+public class FlowRate extends CombinableMeasure {
 
-    private FlowRate(final Liter value) {
+    private FlowRate(final double value) {
         super(value);
     }
 
     @Override
-    public CombinableMeasure<Liter> combine(CombinableMeasure<Liter> with) {
-        return FlowRate.of(getValue().add(with.getValue()));
+    public CombinableMeasure combine(CombinableMeasure with) {
+        return FlowRate.of(getValue() + with.getValue());
     }
 
     /**
@@ -18,7 +18,7 @@ public class FlowRate extends CombinableMeasure<Liter> {
      * @param value of liters
      * @return the flow rate measured in liters per minute
      */
-    public static FlowRate of(Liter value) {
+    public static FlowRate of(double value) {
         return new FlowRate(value);
     }
 

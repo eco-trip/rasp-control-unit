@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.CompletableFuture;
 
-public class BrightnessSensor<ID> extends Sensor<ID, Brightness> {
+public class BrightnessSensor<ID> extends Sensor<ID, Integer, Brightness> {
     private static final Logger LOG = LoggerFactory.getLogger(BrightnessSensor.class);
     private final I2C channel;
 
@@ -22,7 +22,7 @@ public class BrightnessSensor<ID> extends Sensor<ID, Brightness> {
                              final I2C channel) {
         super(identifier, detectionFactory);
         this.channel = channel;
-        LOG.info("BH1750 Connected to i2c bus={} address={}. OK.", channel.bus(), channel.device());
+        LOG.info("BrightnessSensor Connected to i2c bus={} address={}. OK.", channel.bus(), channel.device());
         init();
     }
 
@@ -47,14 +47,11 @@ public class BrightnessSensor<ID> extends Sensor<ID, Brightness> {
         channel.write((byte) 0x10);
     }
 
-    public static class Builder<ID> {
+    public static class Builder<ID> extends SensorBuilder<ID, Integer, Brightness> {
         private final Context ctx;
         private I2CProvider provider;
         private I2cBus bus;
         private Address address;
-        private ID identifier;
-
-        private DetectionFactory<ID, Brightness> detectionFactory;
 
         public Builder(final Context ctx) {
             this.ctx = ctx;
@@ -75,23 +72,14 @@ public class BrightnessSensor<ID> extends Sensor<ID, Brightness> {
             return this;
         }
 
-        public Builder<ID> setIdentifier(final ID identifier) {
-            this.identifier = identifier;
-            return this;
-        }
-
-        public Builder<ID> setDetectionFactory(DetectionFactory<ID, Brightness> detectionFactory) {
-            this.detectionFactory = detectionFactory;
-            return this;
-        }
-
+        @Override
         public BrightnessSensor<ID> build() {
             final I2CConfig configuration = I2C.newConfigBuilder(ctx)
-                    .id(identifier.toString())
+                    .id(getIdentifier().toString())
                     .bus(bus.getChannel())
                     .device(address.getValue())
                     .build();
-            return new BrightnessSensor<>(identifier, detectionFactory, provider.create(configuration));
+            return new BrightnessSensor<>(getIdentifier(), getDetectionFactory(), provider.create(configuration));
         }
     }
 

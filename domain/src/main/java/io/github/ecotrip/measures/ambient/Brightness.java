@@ -5,13 +5,13 @@ import io.github.ecotrip.measures.Measure;
 /**
  * Brightness in Lux
  */
-public class Brightness extends Measure<Integer> {
+public class Brightness extends Measure {
 
-    private Brightness(final int value) {
+    private Brightness(final double value) {
         super(value);
     }
 
-    public static Brightness of(final int value) {
+    public static Brightness of(final double value) {
         return new Brightness(value);
     }
 

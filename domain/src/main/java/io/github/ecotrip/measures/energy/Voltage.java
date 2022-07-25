@@ -5,7 +5,7 @@ import io.github.ecotrip.measures.Measure;
 /**
  * Measured in Volt (V)
  */
-public class Voltage extends Measure<Double> {
+public class Voltage extends Measure {
 
     private Voltage(double value) {
         super(value);

@@ -2,7 +2,7 @@ package io.github.ecotrip.measures.energy;
 
 import io.github.ecotrip.measures.CombinableMeasure;
 
-public class Current extends CombinableMeasure<Double> {
+public class Current extends CombinableMeasure {
 
     private Current(final double value) {
         super(value);
@@ -17,6 +17,10 @@ public class Current extends CombinableMeasure<Double> {
         return new Current(amps);
     }
 
+    public static Current of(Voltage voltage, Resistance resistance) {
+        return new Current(voltage.getValue() * resistance.getValue());
+    }
+
     @Override
     public String toString() {
         return "Current{" +
@@ -25,7 +29,7 @@ public class Current extends CombinableMeasure<Double> {
     }
 
     @Override
-    public CombinableMeasure<Double> combine(CombinableMeasure<Double> with) {
+    public CombinableMeasure combine(CombinableMeasure with) {
         return Current.of(getValue() + with.getValue());
     }
 }
