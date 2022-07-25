@@ -1,12 +1,9 @@
 package adapter;
 
-import com.pi4j.context.Context;
+import adapter.builder.SensorBuilder;
 import com.pi4j.io.i2c.I2C;
-import com.pi4j.io.i2c.I2CConfig;
-import com.pi4j.io.i2c.I2CProvider;
+import io.github.ecotrip.measures.Measure;
 import io.github.ecotrip.measures.ambient.Brightness;
-import io.github.ecotrip.sensors.Address;
-import io.github.ecotrip.sensors.I2cBus;
 import io.github.ecotrip.sensors.DetectionFactory;
 import io.github.ecotrip.sensors.Sensor;
 import org.slf4j.Logger;
@@ -14,11 +11,11 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.CompletableFuture;
 
-public class BrightnessSensor<ID> extends Sensor<ID, Integer, Brightness> {
+public class BrightnessSensor<ID> extends Sensor<ID> {
     private static final Logger LOG = LoggerFactory.getLogger(BrightnessSensor.class);
     private final I2C channel;
 
-    private BrightnessSensor(final ID identifier, final DetectionFactory<ID, Brightness> detectionFactory,
+    private BrightnessSensor(final ID identifier, final DetectionFactory<ID> detectionFactory,
                              final I2C channel) {
         super(identifier, detectionFactory);
         this.channel = channel;
@@ -27,7 +24,7 @@ public class BrightnessSensor<ID> extends Sensor<ID, Integer, Brightness> {
     }
 
     @Override
-    protected CompletableFuture<Brightness> measure() {
+    protected CompletableFuture<Measure> measure() {
         return CompletableFuture.supplyAsync(() -> {
             byte[] p = new byte[2];
             channel.read(p, 0, 2);
@@ -39,7 +36,7 @@ public class BrightnessSensor<ID> extends Sensor<ID, Integer, Brightness> {
     }
 
     @Override
-    protected boolean isMeasureValid(final Brightness measure) {
+    protected boolean isMeasureValid(final Measure measure) {
         return measure.getValue() >= 0;
     }
 
@@ -47,40 +44,17 @@ public class BrightnessSensor<ID> extends Sensor<ID, Integer, Brightness> {
         channel.write((byte) 0x10);
     }
 
-    public static class Builder<ID> extends SensorBuilder<ID, Integer, Brightness> {
-        private final Context ctx;
-        private I2CProvider provider;
-        private I2cBus bus;
-        private Address address;
+    public static class Builder<ID> extends SensorBuilder<ID> {
+        private I2C i2c;
 
-        public Builder(final Context ctx) {
-            this.ctx = ctx;
-        }
-
-        public Builder<ID> setBus(final I2cBus bus) {
-            this.bus = bus;
-            return this;
-        }
-
-        public Builder<ID> setAddress(final Address address) {
-            this.address = address;
-            return this;
-        }
-
-        public Builder<ID> setProvider(final Pi4jProvider provider) {
-            this.provider = ctx.provider(provider.getValue());
+        public Builder<ID> setI2C(I2C i2c) {
+            this.i2c = i2c;
             return this;
         }
 
         @Override
         public BrightnessSensor<ID> build() {
-            final I2CConfig configuration = I2C.newConfigBuilder(ctx)
-                    .id(getIdentifier().toString())
-                    .bus(bus.getChannel())
-                    .device(address.getValue())
-                    .build();
-            return new BrightnessSensor<>(getIdentifier(), getDetectionFactory(), provider.create(configuration));
+            return new BrightnessSensor<>(getIdentifier(), getDetectionFactory(), i2c);
         }
     }
-
 }

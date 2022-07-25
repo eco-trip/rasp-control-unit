@@ -1,11 +1,12 @@
 package adapter;
 
+import adapter.builder.SensorBuilder;
 import io.github.ecotrip.measures.Measure;
 import io.github.ecotrip.measures.ambient.Temperature;
 import io.github.ecotrip.measures.energy.Current;
 import io.github.ecotrip.measures.energy.Resistance;
 import io.github.ecotrip.measures.energy.Voltage;
-import io.github.ecotrip.sensors.DataChannel;
+import io.github.ecotrip.sensors.channel.DataChannel;
 import io.github.ecotrip.sensors.DetectionFactory;
 import io.github.ecotrip.sensors.Sensor;
 
@@ -25,14 +26,14 @@ public class TemperatureSensor <ID> extends Sensor<ID> {
 
     @Override
     protected CompletableFuture<Measure> measure() {
-        final Voltage voltage = channel.getRawData();
-        return CompletableFuture.supplyAsync(() -> computeSteinhartFormula(
-                voltage,
-                configuration.vcc,
-                configuration.boardResistance,
-                configuration.sensorResistance,
-                configuration.bValue,
-                configuration.nominalTemperature));
+        return channel.getRawData()
+                .thenApply(voltage -> computeSteinhartFormula(
+                        voltage,
+                        configuration.vcc,
+                        configuration.boardResistance,
+                        configuration.sensorResistance,
+                        configuration.bValue,
+                        configuration.nominalTemperature));
     }
 
     @Override
@@ -53,12 +54,14 @@ public class TemperatureSensor <ID> extends Sensor<ID> {
         private DataChannel<Voltage> channel;
         private Configuration configuration;
 
-        public void setChannel(DataChannel<Voltage> channel) {
+        public Builder<ID> setChannel(DataChannel<Voltage> channel) {
             this.channel = channel;
+            return this;
         }
 
-        public void setConfiguration(Configuration configuration) {
+        public Builder<ID> setConfiguration(Configuration configuration) {
             this.configuration = configuration;
+            return this;
         }
 
         @Override
@@ -76,8 +79,8 @@ public class TemperatureSensor <ID> extends Sensor<ID> {
         private final Temperature nominalTemperature;
         private final Resistance sensorResistance;
 
-        public Configuration(Temperature maxValue, Temperature minValue, Resistance boardResistance, Voltage vcc,
-                             int bValue, Temperature nominalTemperature, Resistance sensorResistance) {
+        public Configuration(Temperature maxValue, Temperature minValue, Temperature nominalTemperature,
+                             Resistance boardResistance, Resistance sensorResistance, Voltage vcc, int bValue) {
             this.maxValue = maxValue;
             this.minValue = minValue;
             this.boardResistance = boardResistance;

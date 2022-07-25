@@ -1,4 +1,4 @@
-package adapter;
+package adapter.builder;
 
 import io.github.ecotrip.sensors.DetectionFactory;
 import io.github.ecotrip.sensors.Sensor;

@@ -9,13 +9,11 @@ import io.github.ecotrip.services.ConsumptionService;
 import java.util.concurrent.CompletableFuture;
 
 public class DetectConsumptions {
-    public static <ID> CompletableFuture<Detection<ID, Current>> detectCurrent(
-            ConsumptionService<ID, Double, Current> consumptionService) {
+    public static <ID> CompletableFuture<Detection<ID>> detectCurrent(ConsumptionService<ID> consumptionService) {
         return consumptionService.getConsumption();
     }
 
-    public static <ID> CompletableFuture<Detection<ID, FlowRate>> detectFlowRate(
-            ConsumptionService<ID, Liter, FlowRate> consumptionService) {
+    public static <ID> CompletableFuture<Detection<ID>> detectFlowRate(ConsumptionService<ID> consumptionService) {
         return consumptionService.getConsumption();
     }
 }
