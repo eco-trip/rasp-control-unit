@@ -2,10 +2,12 @@ import adapter.BrightnessSensor;
 import adapter.Pi4jProvider;
 import com.pi4j.Pi4J;
 import com.pi4j.util.Console;
+import engine.EngineFactory;
 import io.github.ecotrip.sensors.Address;
 import io.github.ecotrip.sensors.I2cBus;
 import io.github.ecotrip.sensors.DetectionFactory;
 
+import java.util.List;
 import java.util.UUID;
 
 public class Application {
@@ -24,7 +26,7 @@ public class Application {
                 .setDetectionFactory(DetectionFactory.of(UUID::randomUUID))
                 .build();
 
-        new Controller<>(sensor).execute().join();
+        RoomMonitoringService.of(List.of(sensor), EngineFactory.createScheduledExecutor()).start();
 
         pi4j.shutdown();
     }

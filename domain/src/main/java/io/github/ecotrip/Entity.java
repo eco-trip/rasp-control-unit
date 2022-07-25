@@ -7,7 +7,7 @@ public abstract class Entity<ID> {
 
     protected Entity(final ID identifier) {
         if(identifier == null) {
-            throw new IllegalStateException("Identifier can not be null!");
+            throw new IllegalStateException("The entity's identifier can not be null!");
         }
         this.identifier = identifier;
     }
