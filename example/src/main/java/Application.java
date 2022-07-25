@@ -50,7 +50,7 @@ public class Application {
                 Address.of(0x01), Address.of(0x00), Gain.GAIN_4_096V));
 
         var ntcConfiguration = new TemperatureSensor.Configuration(
-                Temperature.of(25), Temperature.of(50), Temperature.of(0), Resistance.of(10100),
+                Temperature.of(50), Temperature.of(0), Temperature.of(25), Resistance.of(10100),
                 Resistance.of(50000), Voltage.of(3.3), 3950);
 
         var ntcSensor = new TemperatureSensor.Builder<UUID>()
