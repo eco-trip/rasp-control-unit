@@ -46,12 +46,21 @@ public class Application {
                 .setIdentifier(UUID.randomUUID())
                 .build();
 
-        var adsConverter = new ADSConverter(channel2, new ADSConverter.Configuration(
-                Address.of(0x01), Address.of(0x00), Gain.GAIN_4_096V));
+        var adsConverter = new ADSConverter(channel2, new ADSConverter.Configuration.Builder()
+                .setGain(Gain.GAIN_4_096V)
+                .setConfigRegister(Address.of(0x01))
+                .setConversionRegister(Address.of(0x00))
+                .build());
 
-        var ntcConfiguration = new TemperatureSensor.Configuration(
-                Temperature.of(50), Temperature.of(0), Temperature.of(25), Resistance.of(10100),
-                Resistance.of(50000), Voltage.of(3.3), 3950);
+        var ntcConfiguration = new TemperatureSensor.Configuration.Builder()
+                .setNominalTemperature(Temperature.of(25))
+                .setMaxValue(Temperature.of(50))
+                .setMinValue(Temperature.of(0))
+                .setBoardResistance(Resistance.of(10100))
+                .setSensorResistance(Resistance.of(50000))
+                .setBvalue(3950)
+                .setVcc(Voltage.of(3.3))
+                .build();
 
         var ntcSensor = new TemperatureSensor.Builder<UUID>()
                 .setChannel(() -> adsConverter.getData(AnalogChannel.A0_IN))

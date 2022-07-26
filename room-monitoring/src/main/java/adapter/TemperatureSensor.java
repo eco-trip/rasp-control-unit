@@ -89,5 +89,55 @@ public class TemperatureSensor <ID> extends Sensor<ID> {
             this.nominalTemperature = nominalTemperature;
             this.sensorResistance = sensorResistance;
         }
+
+        public static class Builder {
+            private Temperature maxValue;
+            private Temperature minValue;
+            private Resistance boardResistance;
+            private Voltage vcc;
+            private int bValue;
+            private Temperature nominalTemperature;
+            private Resistance sensorResistance;
+
+            public Builder setMaxValue(Temperature maxValue) {
+                this.maxValue = maxValue;
+                return this;
+            }
+
+            public Builder setMinValue(Temperature minValue) {
+                this.minValue = minValue;
+                return this;
+            }
+
+            public Builder setBoardResistance(Resistance boardResistance) {
+                this.boardResistance = boardResistance;
+                return this;
+            }
+
+            public Builder setVcc(Voltage vcc) {
+                this.vcc = vcc;
+                return this;
+            }
+
+            public Builder setBvalue(int bValue) {
+                this.bValue = bValue;
+                return this;
+            }
+
+            public Builder setNominalTemperature(Temperature nominalTemperature) {
+                this.nominalTemperature = nominalTemperature;
+                return this;
+            }
+
+            public Builder setSensorResistance(Resistance sensorResistance) {
+                this.sensorResistance = sensorResistance;
+                return this;
+            }
+
+            public Configuration build() {
+                return new Configuration(maxValue, minValue, nominalTemperature, boardResistance, sensorResistance,
+                        vcc, bValue);
+            }
+        }
     }
 }

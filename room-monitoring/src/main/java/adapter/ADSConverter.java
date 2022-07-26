@@ -36,10 +36,35 @@ public class ADSConverter extends Converter {
         private final Address conversionRegister;
         private final Gain gain;
 
-        public Configuration(Address configRegister, Address conversionRegister, Gain gain) {
+        private Configuration(Address configRegister, Address conversionRegister, Gain gain) {
             this.configRegister = configRegister;
             this.conversionRegister = conversionRegister;
             this.gain = gain;
+        }
+
+        public static class Builder {
+            private Address configRegister;
+            private Address conversionRegister;
+            private Gain gain;
+
+            public Builder setConfigRegister(Address configRegister) {
+                this.configRegister = configRegister;
+                return this;
+            }
+
+            public Builder setConversionRegister(Address conversionRegister) {
+                this.conversionRegister = conversionRegister;
+                return this;
+            }
+
+            public Builder setGain(Gain gain) {
+                this.gain = gain;
+                return this;
+            }
+
+            public Configuration build() {
+                return new Configuration(configRegister, conversionRegister, gain);
+            }
         }
     }
 }
