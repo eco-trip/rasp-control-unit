@@ -20,8 +20,8 @@ public class EngineFactory {
             }
 
             @Override
-            public void schedule(Runnable toBeScheduled) {
-                executor.schedule(toBeScheduled, 0 , TimeUnit.SECONDS);
+            public void submit(Runnable job) {
+                executor.submit(job);
             }
         };
     }

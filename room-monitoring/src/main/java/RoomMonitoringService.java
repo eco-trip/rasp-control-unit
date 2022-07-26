@@ -24,15 +24,15 @@ public class RoomMonitoringService<ID> {
 
     public void start() {
         service.schedule(() -> {
-            var futures = sensors.parallelStream().map(Sensor::detect).collect(Collectors.toUnmodifiableList());
+            var futures = sensors.stream().map(Sensor::detect).collect(Collectors.toUnmodifiableList());
             Futures.thenAll(futures, this::logsDetections);
         }, DETECTION_INTERVAL);
-        service.waitScheduledJobs();
+        service.waitExecution();
     }
     
     private CompletableFuture<Void> logsDetections(final List<Detection<ID>> detections) {
         final CompletableFuture<Void> future = new CompletableFuture<>();
-        service.schedule(() -> {
+        service.submit(() -> {
             detections.forEach(d -> LOG.info("{}", d));
             future.complete(null);
         });
