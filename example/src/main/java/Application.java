@@ -1,9 +1,9 @@
-import adapter.ADSConverter;
-import adapter.BrightnessSensor;
-import adapter.Pi4jProvider;
-import adapter.TemperatureSensor;
+import adapter.*;
+import adapter.builder.DigitalInputBuilder;
 import adapter.builder.I2cBuilder;
 import com.pi4j.Pi4J;
+import com.pi4j.io.gpio.digital.DigitalInput;
+import com.pi4j.io.gpio.digital.PullResistance;
 import com.pi4j.util.Console;
 import engine.EngineFactory;
 import io.github.ecotrip.measures.ambient.Temperature;
@@ -69,7 +69,21 @@ public class Application {
                 .setDetectionFactory(DetectionFactory.of(UUID::randomUUID))
                 .build();
 
-        var sensors = List.of(brightnessSensor, ntcSensor);
+        var digitalInput = new DigitalInputBuilder<UUID>(pi4j)
+                .setAddress(Address.of(27))
+                .setIdentifier(UUID.randomUUID())
+                .setPullResistance(PullResistance.PULL_UP)
+                .setProvider(Pi4jProvider.PIGPIO_DI)
+                .build();
+
+        var waterFlowSensor = new WaterFlowSensor.Builder<UUID>()
+                .setFrequency(11)
+                .setDigitalInput(digitalInput)
+                .setDetectionFactory(DetectionFactory.of(UUID::randomUUID))
+                .setIdentifier(UUID.randomUUID())
+                .build();
+
+        var sensors = List.of(brightnessSensor, ntcSensor, waterFlowSensor);
 
         RoomMonitoringService.of(sensors, EngineFactory.createScheduledExecutor()).start();
 
