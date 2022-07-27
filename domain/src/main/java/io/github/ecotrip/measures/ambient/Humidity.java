@@ -1,6 +1,5 @@
 package io.github.ecotrip.measures.ambient;
 
-import io.github.ecotrip.measures.InvalidMeasureException;
 import io.github.ecotrip.measures.Measure;
 
 /**
@@ -8,11 +7,8 @@ import io.github.ecotrip.measures.Measure;
  */
 public class Humidity extends Measure {
 
-    private Humidity(final double value) throws InvalidMeasureException {
+    private Humidity(final double value) {
         super(value);
-        if(value > 100 || value < 0) {
-            throw new InvalidMeasureException(value);
-        }
     }
 
     /**
@@ -20,7 +16,7 @@ public class Humidity extends Measure {
      * @param percentage value of humidity
      * @return
      */
-    public static Humidity of(final double percentage) throws InvalidMeasureException {
+    public static Humidity of(final double percentage) {
         return new Humidity(percentage);
     }
 

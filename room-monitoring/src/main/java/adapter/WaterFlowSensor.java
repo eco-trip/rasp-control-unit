@@ -20,7 +20,7 @@ public class WaterFlowSensor<ID> extends Sensor<ID> {
     private final AtomicInteger pulses = new AtomicInteger();
     private final AtomicBoolean enabledForReading = new AtomicBoolean();
 
-    protected WaterFlowSensor(ID identifier, DetectionFactory<ID> detectionFactory, int frequency,
+    private WaterFlowSensor(ID identifier, DetectionFactory<ID> detectionFactory, int frequency,
                               DigitalInput digitalInput) {
         super(identifier, detectionFactory);
         this.frequency = frequency;

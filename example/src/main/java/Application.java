@@ -1,7 +1,9 @@
 import adapter.*;
 import adapter.builder.DigitalInputBuilder;
 import adapter.builder.I2cBuilder;
+import adapter.builder.MultiDigitalChannelBuilder;
 import com.pi4j.Pi4J;
+import com.pi4j.io.gpio.digital.DigitalMode;
 import com.pi4j.io.gpio.digital.PullResistance;
 import com.pi4j.util.Console;
 import engine.EngineFactory;
@@ -13,6 +15,7 @@ import io.github.ecotrip.sensors.adc.AnalogChannel;
 import io.github.ecotrip.sensors.adc.Gain;
 import io.github.ecotrip.sensors.channel.I2cBus;
 import io.github.ecotrip.sensors.DetectionFactory;
+import io.github.ecotrip.sensors.channel.MultiDigitalChannel;
 
 import java.util.List;
 import java.util.UUID;
@@ -82,7 +85,21 @@ public class Application {
                 .setIdentifier(UUID.randomUUID())
                 .build();
 
-        var sensors = List.of(brightnessSensor, ntcSensor, waterFlowSensor);
+        var channel3 = new MultiDigitalChannelBuilder<UUID>(pi4j)
+                .setInitialState(MultiDigitalChannel.State.HIGH)
+                .setMode(DigitalMode.OUTPUT)
+                .setAddress(Address.of(17))
+                .setIdentifier(UUID.randomUUID())
+                .setProvider(Pi4jProvider.PIGPIO_MD)
+                .build();
+
+        var temperatureAndHumiditySensor = new TemperatureAndHumiditySensor.Builder<UUID>()
+                .setChannel(channel3)
+                .setIdentifier(UUID.randomUUID())
+                .setDetectionFactory(DetectionFactory.of(UUID::randomUUID))
+                .build();
+
+        var sensors = List.of(brightnessSensor, ntcSensor, waterFlowSensor, temperatureAndHumiditySensor);
 
         RoomMonitoringService.of(sensors, EngineFactory.createScheduledExecutor()).start();
 
