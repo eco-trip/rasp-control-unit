@@ -10,6 +10,7 @@ import io.github.ecotrip.sensors.channel.DataChannel;
 import io.github.ecotrip.sensors.DetectionFactory;
 import io.github.ecotrip.sensors.Sensor;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class TemperatureSensor <ID> extends Sensor<ID> {
@@ -25,7 +26,7 @@ public class TemperatureSensor <ID> extends Sensor<ID> {
     }
 
     @Override
-    protected CompletableFuture<Measure> measure() {
+    protected CompletableFuture<List<Measure>> measure() {
         return channel.getRawData()
                 .thenApply(voltage -> computeSteinhartFormula(
                         voltage,
@@ -33,12 +34,14 @@ public class TemperatureSensor <ID> extends Sensor<ID> {
                         configuration.boardResistance,
                         configuration.sensorResistance,
                         configuration.bValue,
-                        configuration.nominalTemperature));
+                        configuration.nominalTemperature))
+                .thenApply(List::of);
     }
 
     @Override
     protected boolean isMeasureValid(Measure measure) {
-        return measure.isGreaterEqualThan(configuration.minValue) && measure.isLessEqualThan(configuration.maxValue);
+        return measure.isGreaterEqualThan(configuration.minValue)
+                && measure.isLessEqualThan(configuration.maxValue);
     }
 
     private static Temperature computeSteinhartFormula(Voltage voltage, Voltage vcc, Resistance r1, Resistance r2,

@@ -2,6 +2,7 @@ package io.github.ecotrip.sensors;
 
 import io.github.ecotrip.measures.Measure;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 public class DetectionFactory<ID> {
@@ -11,7 +12,7 @@ public class DetectionFactory<ID> {
         this.idGenerator = idGenerator;
     }
 
-    public Detection<ID> create(final Measure measure) {
+    public Detection<ID> create(final List<Measure> measure) {
         return Detection.of(idGenerator.get(), measure);
     }
 

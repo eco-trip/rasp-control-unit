@@ -19,7 +19,5 @@ public class ConsumptionServicesTests {
     @Test
     public void testWaterConsumption() {
         //MOCKITO
-        var detections = List.of(df1.create(FlowRate.of(5)), df2.createEmpty());
-        detections.forEach(System.out::println);
     }
 }

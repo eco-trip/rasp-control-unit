@@ -2,7 +2,6 @@ package io.github.ecotrip.services;
 
 
 import io.github.ecotrip.measures.CombinableMeasure;
-import io.github.ecotrip.measures.Measure;
 import io.github.ecotrip.sensors.Detection;
 import io.github.ecotrip.sensors.DetectionFactory;
 import io.github.ecotrip.sensors.Sensor;
@@ -39,15 +38,15 @@ public abstract class ConsumptionService<ID> {
     }
 
     public CompletableFuture<Detection<ID>> getConsumption() {
-        var measure = combineMeasures();
-        return measure.isEmpty() ?
+        var totalMeasure = combineMeasures();
+        return totalMeasure.isEmpty() ?
                 CompletableFuture.completedFuture(detectionFactory.createEmpty()) :
-                measure.get().thenApply(detectionFactory::create);
+                totalMeasure.get().thenApply(m -> detectionFactory.create(List.of(m)));
     }
 
     private Optional<CompletableFuture<CombinableMeasure>> combineMeasures() {
         return getSensors().stream().map(Sensor::detect)
-                .map(f -> f.thenApply(Detection::getMeasure))
+                .map(f -> f.thenApply(Detection::getMeasures))
                 .map(f -> f.thenApply(m -> (CombinableMeasure)m))
                 .reduce((f1, f2) -> f1.thenCombine(f2, CombinableMeasure::combine));
     }

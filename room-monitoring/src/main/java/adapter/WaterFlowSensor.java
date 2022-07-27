@@ -7,12 +7,15 @@ import io.github.ecotrip.measures.Measure;
 import io.github.ecotrip.measures.water.FlowRate;
 import io.github.ecotrip.sensors.DetectionFactory;
 import io.github.ecotrip.sensors.Sensor;
+import utils.Execution;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class WaterFlowSensor<ID> extends Sensor<ID> {
+    private static final long ONE_SECOND_IN_MILLIS = 1000;
     private final int frequency;
     private final AtomicInteger pulses = new AtomicInteger();
     private final AtomicBoolean enabledForReading = new AtomicBoolean();
@@ -29,20 +32,12 @@ public class WaterFlowSensor<ID> extends Sensor<ID> {
     }
 
     @Override
-    protected CompletableFuture<Measure> measure() {
+    protected CompletableFuture<List<Measure>> measure() {
         return CompletableFuture.supplyAsync(() -> {
-            double start = java.lang.System.nanoTime();
             pulses.set(0);
-            enabledForReading.set(true);
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            enabledForReading.set(false);
-            double end = java.lang.System.nanoTime();
-            return computeFlowRateUsingHallEffect((end - start) / 1000000);
-        });
+            double actualTime = Execution.calculateExecutionTimeInMillis(this::receivePulsesWithinOneSecond);
+            return computeFlowRateUsingHallEffect(actualTime);
+        }).thenApply(List::of);
     }
 
     @Override
@@ -50,9 +45,15 @@ public class WaterFlowSensor<ID> extends Sensor<ID> {
         return measure.getValue() >= 0;
     }
 
-    private FlowRate computeFlowRateUsingHallEffect(final double time) {
-        double effectivePulses = (pulses.get() * 1000 / time);
-        return FlowRate.of(effectivePulses / frequency);
+    private FlowRate computeFlowRateUsingHallEffect(final double actualTime) {
+        double actualPulses = ((pulses.get() * actualTime) / ONE_SECOND_IN_MILLIS);
+        return FlowRate.of(actualPulses / frequency);
+    }
+
+    private void receivePulsesWithinOneSecond() {
+        enabledForReading.set(true);
+        Execution.safeSleep(ONE_SECOND_IN_MILLIS);
+        enabledForReading.set(false);
     }
 
     public static class Builder<ID> extends SensorBuilder<ID> {

@@ -2,7 +2,6 @@ import adapter.*;
 import adapter.builder.DigitalInputBuilder;
 import adapter.builder.I2cBuilder;
 import com.pi4j.Pi4J;
-import com.pi4j.io.gpio.digital.DigitalInput;
 import com.pi4j.io.gpio.digital.PullResistance;
 import com.pi4j.util.Console;
 import engine.EngineFactory;

@@ -3,7 +3,9 @@ package io.github.ecotrip.sensors;
 import io.github.ecotrip.Entity;
 import io.github.ecotrip.measures.Measure;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 public abstract class Sensor<ID> extends Entity<ID> {
     private final DetectionFactory<ID> detectionFactory;
@@ -14,16 +16,19 @@ public abstract class Sensor<ID> extends Entity<ID> {
     }
 
     public CompletableFuture<Detection<ID>> detect() {
-        final CompletableFuture<Measure> measure = measure();
-        return measure.thenApply(m -> {
-            if(!isMeasureValid(m)) {
+        final CompletableFuture<List<Measure>> measures = measure();
+        return measures.thenApply(m -> {
+            var validMeasures = m.stream()
+                    .filter(this::isMeasureValid)
+                    .collect(Collectors.toUnmodifiableList());
+            if(validMeasures.isEmpty()) {
                 return detectionFactory.createEmpty();
             }
-            return detectionFactory.create(m);
+            return detectionFactory.create(validMeasures);
         });
     }
 
-    protected abstract CompletableFuture<Measure> measure();
+    protected abstract CompletableFuture<List<Measure>> measure();
 
     protected abstract boolean isMeasureValid(Measure measure);
 }
