@@ -15,7 +15,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 
 public class TemperatureAndHumiditySensor<ID> extends Sensor<ID> {
-    private final MultiDigitalChannel channel;
+    private final MultiDigitalChannel<ID> channel;
     private static final long ONE_SECOND_IN_MILLIS = 1000;
     private static final long SEVEN_MILLIS_IN_NANOS = 7000000;
     private static final int MAX_HUMIDITY_VALUE = 100;
@@ -24,7 +24,7 @@ public class TemperatureAndHumiditySensor<ID> extends Sensor<ID> {
     private static final int MIN_ROOM_TEMPERATURE_VALUE = 15;
 
     protected TemperatureAndHumiditySensor(ID identifier, DetectionFactory<ID> detectionFactory,
-                                           MultiDigitalChannel channel) {
+                                           MultiDigitalChannel<ID> channel) {
         super(identifier, detectionFactory);
         this.channel = channel;
     }
@@ -58,7 +58,7 @@ public class TemperatureAndHumiditySensor<ID> extends Sensor<ID> {
     }
 
     private void synchronizeWithTheProtocol() {
-        channel.sendHigh();
+        channel.sendLow();
         Execution.safeSleep(16);
         channel.sendHigh();
         channel.switchToInputMode();
@@ -113,9 +113,9 @@ public class TemperatureAndHumiditySensor<ID> extends Sensor<ID> {
     }
 
     public static class Builder<ID> extends SensorBuilder<ID> {
-        private MultiDigitalChannel channel;
+        private MultiDigitalChannel<ID> channel;
 
-        public Builder<ID> setChannel(final MultiDigitalChannel channel) {
+        public Builder<ID> setChannel(final MultiDigitalChannel<ID> channel) {
             this.channel = channel;
             return this;
         }

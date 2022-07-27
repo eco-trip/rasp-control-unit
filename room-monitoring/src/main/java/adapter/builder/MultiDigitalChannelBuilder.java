@@ -51,7 +51,7 @@ public class MultiDigitalChannelBuilder<ID> extends Pi4JDigitalBuilder<ID, Multi
 
             @Override
             public State getState() {
-                return digital.state().equals(DigitalState.HIGH) ? State.HIGH : State.LOW;
+                return digital.state() == DigitalState.HIGH ? State.HIGH : State.LOW;
             }
         };
     }

@@ -99,7 +99,7 @@ public class Application {
                 .setDetectionFactory(DetectionFactory.of(UUID::randomUUID))
                 .build();
 
-        var sensors = List.of(brightnessSensor, ntcSensor, waterFlowSensor, temperatureAndHumiditySensor);
+        var sensors = List.of(temperatureAndHumiditySensor);
 
         RoomMonitoringService.of(sensors, EngineFactory.createScheduledExecutor()).start();
 

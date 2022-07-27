@@ -13,7 +13,7 @@ import io.github.ecotrip.sensors.Sensor;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public class TemperatureSensor <ID> extends Sensor<ID> {
+public class TemperatureSensor<ID> extends Sensor<ID> {
     private static final double KELVIN = 273.15;
     private final DataChannel<Voltage> channel;
     private final Configuration configuration;

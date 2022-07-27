@@ -15,7 +15,7 @@ public class Temperature extends Measure {
     @Override
     public String toString() {
         return "Temperature{" +
-                "value=" + getValue() + " °C" +
+                "value=" + getValue() + "°C" +
                 '}';
     }
 }
