@@ -1,5 +1,7 @@
 package com.pi4j.example.PN532;
 
+import java.util.Arrays;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,6 +42,7 @@ public class PN532 {
 		command[0] = PN532_COMMAND_GETFIRMWAREVERSION;
 
 		if (medium.writeCommand(command) != CommandStatus.OK) {
+			System.out.print("getFirmwareVersion error!\n");
 			return 0;
 		}
 
@@ -70,10 +73,23 @@ public class PN532 {
 		command[3] = 0x01; // use IRQ pin!
 
 		if (medium.writeCommand(command) != CommandStatus.OK) {
+			System.out.print("SAMConfig error!\n");
 			return false;
 		}
 
-		return medium.readResponse(pn532_packetbuffer, 8) > 0;
+		Arrays.fill(pn532_packetbuffer, (byte)0);
+		int status = medium.readResponse(pn532_packetbuffer, 8);
+
+		System.out.print("SAMConfig read response:\n");
+
+		for (int x=0;x<pn532_packetbuffer.length;x++)
+		{
+			System.out.print(Integer.toHexString((int)(pn532_packetbuffer[x] & 0xff))+" ");
+		}
+
+		System.out.print("\n\n");
+
+		return status > 0;
 	}
 
 	public int readPassiveTargetID(byte cardbaudrate, byte[] buffer) throws InterruptedException {
@@ -88,6 +104,7 @@ public class PN532 {
 
 		// read data packet
 //		if (medium.readResponse(pn532_packetbuffer, pn532_packetbuffer.length) < 0) {
+		Arrays.fill(pn532_packetbuffer, (byte)0);
 		if (medium.readResponse(pn532_packetbuffer, 20) < 0) {
 			return -1;
 		}
@@ -136,6 +153,7 @@ public class PN532 {
 		}
 
 		// read data packet
+		Arrays.fill(pn532_packetbuffer, (byte)0);
 		if (medium.readResponse(pn532_packetbuffer, pn532_packetbuffer.length) < 0) {
 //		if (medium.readResponse(pn532_packetbuffer, 20) < 0) {
 			return -1;
@@ -190,7 +208,7 @@ public class PN532 {
 			LOG.error("inRelease: writeCommand failed");
 			return -1; 
 		}
-
+		Arrays.fill(pn532_packetbuffer, (byte)0);
 		return medium.readResponse(pn532_packetbuffer,pn532_packetbuffer.length);
 	}
 
@@ -200,6 +218,7 @@ public class PN532 {
 			return false; 
 		}
 		
+		Arrays.fill(pn532_packetbuffer, (byte)0);
 		int status = medium.readResponse(pn532_packetbuffer,pn532_packetbuffer.length,0);
 		if (status < 0) {
 			LOG.error("tgInitAsTarget: readResponse failed -> "+status);
@@ -251,6 +270,7 @@ public class PN532 {
 			return -1; 
 		}
 
+		Arrays.fill(pn532_packetbuffer, (byte)0);
 		int status = medium.readResponse(pn532_packetbuffer, pn532_packetbuffer.length, 3000);
 
 		if (0 >= status) {
@@ -271,7 +291,7 @@ public class PN532 {
 			}
 
 			System.out.print("\n\n");
-			return -5;
+			return -(int)(pn532_packetbuffer[0] & 0xff);
 		}
 		
 		for (int i = 0; i < length; i++) {
@@ -318,6 +338,7 @@ public class PN532 {
 			}
 		}
 
+		Arrays.fill(pn532_packetbuffer, (byte)0);
 		if (0 >  medium.readResponse(pn532_packetbuffer, pn532_packetbuffer.length, 3000)) {
 			LOG.error("tgSetData: readResponse failed");
 			return false;

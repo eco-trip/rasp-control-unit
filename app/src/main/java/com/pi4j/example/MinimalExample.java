@@ -1,5 +1,9 @@
 package com.pi4j.example;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+
 /*-
  * #%L
  * **********************************************************************
@@ -31,6 +35,7 @@ import com.pi4j.context.Context;
 import com.pi4j.example.PN532.IPN532Interface;
 import com.pi4j.example.PN532.PN532;
 import com.pi4j.example.PN532.PN532I2C;
+import com.pi4j.example.PN532.PN532Spi;
 import com.pi4j.example.PN532.Ndef.NdefMessage;
 import com.pi4j.example.PN532.Ndef.NdefRecord;
 import com.pi4j.example.ACS712.ScaleFactor;
@@ -192,7 +197,8 @@ public class MinimalExample {
         final ACSensor acs = new ACS712(ScaleFactor.ACS_20A, () -> ads.getDataByAnalogInput(Channel.A1_IN));
         */
 
-        nfcEmulate(pi4j);
+        // nfcRead(pi4j);
+        nfcEmulate(pi4j);   
 
         /* 
         for (int i = 0; i < 1000; i++) {
@@ -223,7 +229,8 @@ public class MinimalExample {
     }
     static public boolean nfcRead(Context pi4j) throws Exception
     {
-        IPN532Interface pn532Interface = new PN532I2C(pi4j);
+        // IPN532Interface pn532Interface = new PN532I2C(pi4j);
+        IPN532Interface pn532Interface = new PN532Spi(pi4j);
         final PN532 nfc = new PN532(pn532Interface);
 
         nfc.begin();
@@ -242,7 +249,6 @@ public class MinimalExample {
 		System.out.print(Long.toHexString((versiondata >> 16) & 0xFF));
 		System.out.print('.');
 		System.out.println(Long.toHexString((versiondata >> 8) & 0xFF));
-
 		// configure board to read RFID tags
 		nfc.SAMConfig();
 
@@ -278,12 +284,18 @@ public class MinimalExample {
 
         return true;
     }
-    static public boolean nfcEmulate(Context pi4j) throws Exception
-    {
-        IPN532Interface pn532Interface = new PN532I2C(pi4j);
-        final PN532 nfc = new PN532(pn532Interface);
+    static public byte[] buildMessage() throws Exception {
 
-        NdefMessage message = new NdefMessage(new NdefRecord[]{new NdefRecord(NdefRecord.TNF_WELL_KNOWN,NdefRecord.RTD_URI,"id value".getBytes(),"http://www.meblabs.com".getBytes())});
+        byte prefix[]=new byte[]{(byte) 0x02};
+        byte uri[]="meblabs.com".getBytes();
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        outputStream.write( prefix );
+        outputStream.write( uri );
+
+        byte payload[] = outputStream.toByteArray( );
+
+        NdefMessage message = new NdefMessage(new NdefRecord[]{new NdefRecord(NdefRecord.TNF_WELL_KNOWN,NdefRecord.RTD_URI,new byte[]{},payload)});
         byte[] messageEncoded = message.toByteArray();
 
         System.out.print("NDEF message: ");
@@ -294,6 +306,25 @@ public class MinimalExample {
 
         System.out.print("\n\n");
 
+        try (FileOutputStream fos = new FileOutputStream("/root/ndef-file")) {
+            fos.write(messageEncoded);
+        }
+
+        return messageEncoded;
+    }
+    static public boolean nfcEmulate(Context pi4j) throws Exception
+    {
+        // IPN532Interface pn532Interface = new PN532I2C(pi4j);
+        IPN532Interface pn532Interface = new PN532Spi(pi4j);
+        final PN532 nfc = new PN532(pn532Interface);
+
+        byte[] messageEncoded = buildMessage();
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        outputStream.write( new byte[]{0x00,(byte) messageEncoded.length} );
+        outputStream.write( messageEncoded );
+
+        byte messageToSend[] = outputStream.toByteArray();
 
         nfc.begin();
         Thread.sleep(1000);
@@ -306,7 +337,8 @@ public class MinimalExample {
 		// Got ok data, print it out!
 		System.out.print("Found chip PN5");
 		System.out.println(Long.toHexString((versiondata >> 24) & 0xFF));
-        nfc.SAMConfig();
+        
+        // nfc.SAMConfig();
 
         // nfc.inRelease(); // precaution
 
@@ -361,12 +393,14 @@ public class MinimalExample {
             command[4+i]=uid[i];
         }
 
-        if (!nfc.tgInitAsTarget(command))
+        while (!nfc.tgInitAsTarget(command));
+        /*
         {
             // tgInitAsTarget failed or timed out!
             nfc.inRelease();
             return false;
         }
+        */
 
         int NDEF_MAX_LENGTH = 128;
 
@@ -378,9 +412,9 @@ public class MinimalExample {
             0x04,                                                        // T
             0x06,                                                        // L
             (byte) 0xE1, 0x04,                                                  // File identifier
-            (byte) ((NDEF_MAX_LENGTH & 0xFF00) >> 8), (byte) (NDEF_MAX_LENGTH & 0xFF), // maximum NDEF file size
+            (byte) 0xFF, (byte) 0xFE, // maximum NDEF file size (byte) ((NDEF_MAX_LENGTH & 0xFF00) >> 8), (byte) (NDEF_MAX_LENGTH & 0xFF)
             0x00,                                                        // read access 0x0 = granted
-            0x00                                                         // write access 0x0 = granted | 0xFF = deny
+            (byte) 0xFF                                                  // write access 0x0 = granted | 0xFF = deny
         };
 
         boolean tagWriteable = false;
@@ -406,9 +440,18 @@ public class MinimalExample {
             status = nfc.tgGetData(rwbuf);
             if (status < 0)
             {
-                System.out.print("tgGetData failed!\n");
-                nfc.inRelease();
-                return true;
+                System.out.println("tgGetData failed! ->" + status);
+                /*
+                if (status == -41)
+                {
+                    nfc.tgInitAsTarget(command);
+                    continue;
+                }
+                else
+                {*/
+                    nfc.inRelease();
+                    return true;
+                // }
             }
 
             System.out.print("Buffer: ");
@@ -531,9 +574,9 @@ public class MinimalExample {
                                 byte[] toSend = new byte[lc];
                                 for (int x=0;x<lc;x++)
                                 {
-                                    if (p1p2_length+x > messageEncoded.length -1)
+                                    if (p1p2_length+x > messageToSend.length -1)
                                         break;
-                                    toSend[x] = messageEncoded[p1p2_length+x];
+                                    toSend[x] = messageToSend[p1p2_length+x];
                                 }
 
                                 responseCommand = setResponse(ResponseCommand.COMMAND_COMPLETE,toSend);
