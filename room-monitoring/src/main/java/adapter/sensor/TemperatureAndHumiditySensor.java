@@ -1,4 +1,4 @@
-package adapter;
+package adapter.sensor;
 
 import adapter.builder.SensorBuilder;
 import io.github.ecotrip.measures.Measure;

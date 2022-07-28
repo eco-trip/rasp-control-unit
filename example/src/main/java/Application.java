@@ -2,6 +2,7 @@ import adapter.*;
 import adapter.builder.DigitalInputBuilder;
 import adapter.builder.I2cBuilder;
 import adapter.builder.MultiDigitalChannelBuilder;
+import adapter.sensor.*;
 import com.pi4j.Pi4J;
 import com.pi4j.io.gpio.digital.DigitalMode;
 import com.pi4j.io.gpio.digital.PullResistance;
@@ -28,6 +29,8 @@ public class Application {
 
         var pi4j = Pi4J.newAutoContext();
 
+        var detectionFactory = DetectionFactory.of(UUID::randomUUID);
+
         var channel1 = new I2cBuilder<UUID>(pi4j)
                 .setProvider(Pi4jProvider.LINUX_FS_I2C)
                 .setAddress(Address.of(0x23))
@@ -35,10 +38,10 @@ public class Application {
                 .setIdentifier(UUID.randomUUID())
                 .build();
 
-        var brightnessSensor = new BrightnessSensor.Builder<UUID>()
+        var bh1750 = new BrightnessSensor.Builder<UUID>()
                 .setI2C(channel1)
                 .setIdentifier(UUID.randomUUID())
-                .setDetectionFactory(DetectionFactory.of(UUID::randomUUID))
+                .setDetectionFactory(detectionFactory)
                 .build();
 
         var channel2 = new I2cBuilder<UUID>(pi4j)
@@ -64,11 +67,11 @@ public class Application {
                 .setVcc(Voltage.of(3.3))
                 .build();
 
-        var ntcSensor = new TemperatureSensor.Builder<UUID>()
+        var ntc3950 = new TemperatureSensor.Builder<UUID>()
                 .setChannel(() -> adsConverter.getData(AnalogChannel.A0_IN))
                 .setConfiguration(ntcConfiguration)
                 .setIdentifier(UUID.randomUUID())
-                .setDetectionFactory(DetectionFactory.of(UUID::randomUUID))
+                .setDetectionFactory(detectionFactory)
                 .build();
 
         var digitalInput = new DigitalInputBuilder<UUID>(pi4j)
@@ -78,10 +81,10 @@ public class Application {
                 .setProvider(Pi4jProvider.PIGPIO_DI)
                 .build();
 
-        var waterFlowSensor = new WaterFlowSensor.Builder<UUID>()
+        var chy7 = new WaterFlowSensor.Builder<UUID>()
                 .setFrequency(11)
                 .setDigitalInput(digitalInput)
-                .setDetectionFactory(DetectionFactory.of(UUID::randomUUID))
+                .setDetectionFactory(detectionFactory)
                 .setIdentifier(UUID.randomUUID())
                 .build();
 
@@ -93,13 +96,27 @@ public class Application {
                 .setProvider(Pi4jProvider.PIGPIO_MD)
                 .build();
 
-        var temperatureAndHumiditySensor = new TemperatureAndHumiditySensor.Builder<UUID>()
+        var dht22 = new TemperatureAndHumiditySensor.Builder<UUID>()
                 .setChannel(channel3)
                 .setIdentifier(UUID.randomUUID())
-                .setDetectionFactory(DetectionFactory.of(UUID::randomUUID))
+                .setDetectionFactory(detectionFactory)
                 .build();
 
-        var sensors = List.of(temperatureAndHumiditySensor);
+        var acsConfiguration = new CurrentSensor.Configuration.Builder()
+                .setAdcMaxValue(1023)
+                .setReferenceVoltage(Voltage.of(5))
+                .setScaleFactor(CurrentSensor.ScaleFactor.ACS_20A)
+                .setVoltageAtZeroCurrent(Voltage.of(2.5))
+                .build();
+
+        var acs712 = new CurrentSensor.Builder<UUID>()
+                .setChannel(() -> adsConverter.getData(AnalogChannel.A1_IN))
+                .setConfiguration(acsConfiguration)
+                .setDetectionFactory(detectionFactory)
+                .setIdentifier(UUID.randomUUID())
+                .build();
+
+        var sensors = List.of(acs712, chy7, dht22, ntc3950, bh1750);
 
         RoomMonitoringService.of(sensors, EngineFactory.createScheduledExecutor()).start();
 

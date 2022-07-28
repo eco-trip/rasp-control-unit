@@ -12,7 +12,7 @@ public class DetectionFactory<ID> {
         this.idGenerator = idGenerator;
     }
 
-    public Detection<ID> create(final List<Measure> measure) {
+    public synchronized Detection<ID> create(final List<Measure> measure) {
         return Detection.of(idGenerator.get(), measure);
     }
 

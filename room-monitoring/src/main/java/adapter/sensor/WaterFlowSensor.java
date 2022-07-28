@@ -1,4 +1,4 @@
-package adapter;
+package adapter.sensor;
 
 import adapter.builder.SensorBuilder;
 import com.pi4j.io.gpio.digital.DigitalInput;
