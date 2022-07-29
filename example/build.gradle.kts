@@ -21,6 +21,7 @@ repositories {
 }
 dependencies {
     implementation(project(":domain"))
+    implementation(project(":core"))
     implementation(project(":room-monitoring"))
     implementation("org.slf4j:slf4j-api:2.0.0-alpha1")
     implementation("org.slf4j:slf4j-simple:2.0.0-alpha1")
