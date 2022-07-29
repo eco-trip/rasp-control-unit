@@ -2,6 +2,7 @@ package io.github.ecotrip.services;
 
 
 import io.github.ecotrip.measures.CombinableMeasure;
+import io.github.ecotrip.measures.Measure;
 import io.github.ecotrip.sensors.Detection;
 import io.github.ecotrip.sensors.DetectionFactory;
 import io.github.ecotrip.sensors.Sensor;
@@ -38,16 +39,30 @@ public abstract class ConsumptionService<ID> {
     }
 
     public CompletableFuture<Detection<ID>> getConsumption() {
-        var totalMeasure = combineMeasures();
-        return totalMeasure.isEmpty() ?
-                CompletableFuture.completedFuture(detectionFactory.createEmpty()) :
-                totalMeasure.get().thenApply(m -> detectionFactory.create(List.of(m)));
+        return combineMeasures().thenApply(m -> m.isEmpty() ? detectionFactory.createEmpty() : detectionFactory.create(List.of(m.get())));
+                
     }
 
-    private Optional<CompletableFuture<CombinableMeasure>> combineMeasures() {
-        return getSensors().stream().map(Sensor::detect)
+    private CompletableFuture<Optional<Measure>> combineMeasures() {
+        Optional<CompletableFuture<List<Measure>>> measures = getSensors().stream()
+                .map(Sensor::detect)
                 .map(f -> f.thenApply(Detection::getMeasures))
-                .map(f -> f.thenApply(m -> (CombinableMeasure)m))
-                .reduce((f1, f2) -> f1.thenCombine(f2, CombinableMeasure::combine));
+                .reduce((f1, f2) -> f1.thenCombine(f2, this::mergeList));
+
+        if(measures.isPresent()) { 
+            return measures.get().thenApply(l -> l.stream().reduce((m1, m2) -> ((CombinableMeasure)m1).combine((CombinableMeasure)m2)));
+        }
+        
+        return CompletableFuture.completedFuture(Optional.empty());
+
+        // measures.thenApply(l -> l.stream().map(m -> (CombinableMeasure)m).collect(Collectors.toList()));
+
+        //         .map(f -> f.thenApply(lm -> lm.stream().map(m -> (CombinableMeasure)m).collect(Collectors.toList())))
+        //         .reduce((f1, f2) -> f1.thenCombine(f2, (l1, l2) -> Stream.of(l1, l2).flatMap(Collection::stream).collect(Collectors.toList())))
+        //         .reduce((f1, f2) -> f1.thenCombine(f2, CombinableMeasure::combine));
+    }
+
+    private List<Measure> mergeList(List<Measure> l1, List<Measure> l2) {
+        return Stream.concat(l1.stream(), l1.stream()).collect(Collectors.toList());
     }
 }

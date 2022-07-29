@@ -47,7 +47,7 @@ public class CurrentSensor<ID> extends Sensor<ID> {
 
     @Override
     protected boolean isMeasureValid(Measure measure) {
-        return true;
+        return measure.getValue() >= 0;
     }
 
     private Current computeCurrentInA(final Voltage outVoltage) {

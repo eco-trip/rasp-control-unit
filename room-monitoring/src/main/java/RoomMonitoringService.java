@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class RoomMonitoringService<ID> {
-    private static final int DETECTION_INTERVAL = 5;
+    private static final int DETECTION_INTERVAL = 3;
     private static final Logger LOG = LoggerFactory.getLogger(RoomMonitoringService.class);
     private final ConsumptionUseCases<ID> consumptionUseCases;
     private final EnvironmentUseCases<ID> environmentUseCases;

@@ -35,7 +35,7 @@ public class Application {
         var currentConsumptionService = CurrentConsumptionService.of(Set.of(acs712), detectionFactory);
 
         var consumptionUseCases = ConsumptionUseCases.of(waterConsumptionService, currentConsumptionService);
-        var environmentUseCases = EnvironmentUseCases.of(bh1750, dht22);
+        var environmentUseCases = EnvironmentUseCases.of(dht22, bh1750);
 
         var engine = EngineFactory.createScheduledExecutor();
 
