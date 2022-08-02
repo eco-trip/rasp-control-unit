@@ -7,7 +7,7 @@ import io.github.ecotrip.measures.Measure;
 import io.github.ecotrip.measures.water.FlowRate;
 import io.github.ecotrip.sensors.DetectionFactory;
 import io.github.ecotrip.sensors.Sensor;
-import utils.Execution;
+import execution.Execution;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;

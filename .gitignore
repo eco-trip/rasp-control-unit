@@ -18,3 +18,5 @@ gradle-app.setting
 /*/bin/
 /*/libs/
 /*/build
+
+/example/src/main/resources/*

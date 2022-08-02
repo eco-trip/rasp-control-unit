@@ -7,7 +7,7 @@ import io.github.ecotrip.measures.energy.Voltage;
 import io.github.ecotrip.sensors.DetectionFactory;
 import io.github.ecotrip.sensors.Sensor;
 import io.github.ecotrip.sensors.channel.DataChannel;
-import utils.Execution;
+import execution.Execution;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;

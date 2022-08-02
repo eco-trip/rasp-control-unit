@@ -3,7 +3,10 @@ package io.github.ecotrip.sensors;
 import io.github.ecotrip.measures.Measure;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class DetectionFactory<ID> {
     private final Supplier<ID> idGenerator;
@@ -16,7 +19,13 @@ public class DetectionFactory<ID> {
         return Detection.of(idGenerator.get(), measure);
     }
 
-    public Detection<ID> createEmpty() {
+    public Detection<ID> merge(Detection<ID> d1, Detection<ID> d2) {
+        var measures = Stream.concat(d1.getMeasures().stream(), d2.getMeasures().stream())
+                .collect(Collectors.toList());
+        return create(measures);
+    }
+
+    public synchronized Detection<ID> createEmpty() {
         return Detection.empty(idGenerator.get());
     }
 

@@ -13,8 +13,6 @@ import java.util.UUID;
 public class ConsumptionServicesTests {
     final DetectionFactory<UUID> df1 = DetectionFactory.of(UUID::randomUUID);
     final DetectionFactory<UUID> df2 = DetectionFactory.of(UUID::randomUUID);
-    final ConsumptionService<UUID> waterConsumptionService = WaterConsumptionService.of(df1);
-    final ConsumptionService<UUID> currentConsumptionService = CurrentConsumptionService.of(df2);
 
     @Test
     public void testWaterConsumption() {

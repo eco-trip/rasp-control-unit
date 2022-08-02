@@ -18,6 +18,7 @@ repositories {
 }
 
 dependencies {
+    implementation(project(":utils"))
     implementation(project(":domain"))
     implementation(project(":core"))
     implementation("org.slf4j:slf4j-api:2.0.0-alpha1")

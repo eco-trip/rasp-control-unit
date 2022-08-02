@@ -1,16 +1,15 @@
 import com.pi4j.Pi4J;
 import com.pi4j.util.Console;
+import engine.Engine;
 import engine.EngineFactory;
 import io.github.ecotrip.sensors.Address;
+import io.github.ecotrip.sensors.Detection;
 import io.github.ecotrip.sensors.adc.AnalogChannel;
 import io.github.ecotrip.sensors.channel.I2cBus;
 import io.github.ecotrip.sensors.DetectionFactory;
-import io.github.ecotrip.services.CurrentConsumptionService;
-import io.github.ecotrip.services.WaterConsumptionService;
 import usecases.ConsumptionUseCases;
 import usecases.EnvironmentUseCases;
 
-import java.util.Set;
 import java.util.UUID;
 
 public class Application {
@@ -31,15 +30,20 @@ public class Application {
         var chy7 = sensorFactory.createCHY7(Address.of(27));
         var dht22 = sensorFactory.createDHT22(Address.of(17));
 
-        var waterConsumptionService = WaterConsumptionService.of(Set.of(chy7), detectionFactory);
-        var currentConsumptionService = CurrentConsumptionService.of(Set.of(acs712), detectionFactory);
+        var consumptionUseCases = new ConsumptionUseCases.Builder<UUID>()
+                .setHotFlowRateSensor(chy7)
+                .setCurrentSensor(acs712)
+                .build();
 
-        var consumptionUseCases = ConsumptionUseCases.of(waterConsumptionService, currentConsumptionService);
-        var environmentUseCases = EnvironmentUseCases.of(dht22, bh1750);
+        var environmentUseCases = new EnvironmentUseCases.Builder<UUID>()
+                .setBrightnessSensor(bh1750)
+                .setHotWaterTemperatureSensor(ntc3950)
+                .setTemperatureAndHumiditySensor(dht22)
+                .build();
 
-        var engine = EngineFactory.createScheduledExecutor();
+        final Engine<Detection<UUID>> engine = EngineFactory.createScheduledExecutor();
 
-        RoomMonitoringService.of(engine, consumptionUseCases, environmentUseCases).start();
+        RoomMonitoringService.of(engine, consumptionUseCases, environmentUseCases, detectionFactory).start();
 
         pi4j.shutdown();
     }

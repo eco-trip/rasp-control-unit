@@ -2,9 +2,12 @@ package engine;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ScheduledFuture;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
-public abstract class Engine {
-    private final List<CompletableFuture<Void>> backgroundJobs;
+public abstract class Engine<T> {
+    private final List<ScheduledFuture<?>> backgroundJobs;
     private final CompletableFuture<Void> execution;
 
     Engine() {
@@ -13,18 +16,21 @@ public abstract class Engine {
     }
 
     public void stop() {
-        backgroundJobs.forEach(c -> c.complete(null));
+        backgroundJobs.forEach(c -> c.cancel(true));
         execution.complete(null);
     }
 
-    public void stop(final Throwable ex) {
-        backgroundJobs.forEach(c -> c.completeExceptionally(ex));
-        execution.complete(null);
+    protected List<ScheduledFuture<?>> getBackgroundJobs() {
+        return backgroundJobs;
     }
 
     public abstract void schedule(Runnable job, long repeatEvery);
 
     public abstract void submit(final Runnable job);
+
+    public abstract CompletableFuture<T> submitAndRepeat(final Function<CompletableFuture<T>, CompletableFuture<T>> job,
+                                                final CompletableFuture<T> accumulator,
+                                                final int repetitions, final int delayInSeconds);
 
     public void waitExecution() {
         execution.join();

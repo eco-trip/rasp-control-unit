@@ -1,12 +1,11 @@
 package engine;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
+import java.util.function.Function;
 
 public class EngineFactory {
-    public static Engine createScheduledExecutor() {
-        return new Engine() {
+    public static <T> Engine<T> createScheduledExecutor() {
+        return new Engine<>() {
             private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
             /**
@@ -16,12 +15,25 @@ public class EngineFactory {
              */
             @Override
             public void schedule(Runnable toBeScheduled, final long repeatEvery) {
-                executor.scheduleAtFixedRate(toBeScheduled,0, repeatEvery, TimeUnit.SECONDS);
+                var f = executor.scheduleWithFixedDelay(toBeScheduled,0, repeatEvery, TimeUnit.SECONDS);
+                getBackgroundJobs().add(f);
             }
 
             @Override
             public void submit(Runnable job) {
                 executor.submit(job);
+            }
+
+            @Override
+            public CompletableFuture<T> submitAndRepeat(final Function<CompletableFuture<T>, CompletableFuture<T>> job,
+                                                        final CompletableFuture<T> accumulator,
+                                                        final int repetitions, final int delayInSeconds) {
+                var delayedExecutor = CompletableFuture.delayedExecutor(delayInSeconds, TimeUnit.SECONDS, executor);
+                if(repetitions > 0) {
+                    return CompletableFuture.supplyAsync(() -> job.apply(accumulator), delayedExecutor)
+                            .thenCompose(t -> submitAndRepeat(job, t,repetitions-1, delayInSeconds));
+                }
+                return accumulator;
             }
         };
     }

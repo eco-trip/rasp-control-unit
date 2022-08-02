@@ -7,7 +7,7 @@ import io.github.ecotrip.measures.ambient.Temperature;
 import io.github.ecotrip.sensors.DetectionFactory;
 import io.github.ecotrip.sensors.Sensor;
 import io.github.ecotrip.sensors.channel.MultiDigitalChannel;
-import utils.Execution;
+import execution.Execution;
 
 import java.util.List;
 import java.util.Optional;
