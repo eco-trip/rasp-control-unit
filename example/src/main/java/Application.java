@@ -1,3 +1,6 @@
+import aws.SampleUtil;
+import com.amazonaws.services.iot.client.AWSIotException;
+import com.amazonaws.services.iot.client.AWSIotMqttClient;
 import com.pi4j.Pi4J;
 import com.pi4j.util.Console;
 import engine.Engine;
@@ -10,9 +13,22 @@ import io.github.ecotrip.sensors.DetectionFactory;
 import usecases.ConsumptionUseCases;
 import usecases.EnvironmentUseCases;
 
+import java.io.File;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.UUID;
 
 public class Application {
+    public static void aws(String[] args) throws AWSIotException, URISyntaxException {
+        var certificateFile = SampleUtil.getConfig("certificateFile");
+        var privateKeyFile = SampleUtil.getConfig("privateKeyFile");
+        var clientEndpoint = SampleUtil.getConfig("clientEndpoint");
+        var clientId = SampleUtil.getConfig("clientId");
+        SampleUtil.KeyStorePasswordPair pair = SampleUtil.getKeyStorePasswordPair(certificateFile, privateKeyFile);
+        AWSIotMqttClient client = new AWSIotMqttClient(clientEndpoint, clientId, pair.keyStore, pair.keyPassword);
+        client.connect();
+    }
+
     public static void main(String[] args) {
         final Console console = new Console();
 

@@ -19,4 +19,5 @@ gradle-app.setting
 /*/libs/
 /*/build
 
-/example/src/main/resources/*
+/example/src/main/resources/secrets/*
+/example/src/main/resources/aws-iot-sdk-samples.properties
