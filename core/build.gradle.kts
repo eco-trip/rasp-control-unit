@@ -1,5 +1,5 @@
 plugins {
-    id("java")
+    id("java-quality-common-convention")
 }
 
 group = "io.github.ecotrip"
@@ -9,11 +9,9 @@ repositories {
 }
 
 dependencies {
-    implementation(project(":domain"))
-    testImplementation(libs.junit.jupiter.api)
-    testRuntimeOnly(libs.junit.jupiter.engine)
+    testImplementation(libs.junit.jupiter)
 }
 
-tasks.getByName<Test>("test") {
+tasks.withType<Test> {
     useJUnitPlatform()
 }
