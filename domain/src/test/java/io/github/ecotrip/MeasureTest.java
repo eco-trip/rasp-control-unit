@@ -16,6 +16,7 @@ import io.github.ecotrip.measure.ambient.Temperature;
 import io.github.ecotrip.measure.energy.Current;
 import io.github.ecotrip.measure.energy.Resistance;
 import io.github.ecotrip.measure.energy.Voltage;
+import io.github.ecotrip.measure.water.FlowRate;
 
 public class MeasureTest {
     @Test
@@ -173,5 +174,29 @@ public class MeasureTest {
         assertThrows(IncompatibleMeasuresException.class, () -> v1.checkAndCombine(Current.of(10)));
         assertEquals(v1.toString(), "Voltage{value=" + v1.getValue() + " volts}");
         assertEquals(Voltage.of(Current.of(15), Resistance.of(100)), Voltage.of(1500));
+    }
+
+    @Test
+    public void testFlowRateByEquals() {
+        var fr1 = FlowRate.of(3, FlowRate.FlowRateType.HOT);
+        var fr2 = FlowRate.of(3, FlowRate.FlowRateType.HOT);
+        var fr3 = FlowRate.of(3, FlowRate.FlowRateType.COLD);
+        var fr4 = FlowRate.of(2, FlowRate.FlowRateType.HOT);
+
+        assertEquals(fr1, fr2);
+        assertNotEquals(fr1, fr3);
+        assertNotEquals(fr1, fr4);
+        assertEquals(fr1, fr1);
+    }
+
+    @Test
+    public void testFlowRateOps() {
+        var fr1 = FlowRate.of(40, FlowRate.FlowRateType.HOT);
+        var fr2 = FlowRate.of(50, FlowRate.FlowRateType.HOT);
+        var fr3 = FlowRate.of(3, FlowRate.FlowRateType.COLD);
+
+        assertEquals(fr1.checkAndCombine(fr2), FlowRate.of(45, FlowRate.FlowRateType.HOT));
+        assertThrows(IncompatibleMeasuresException.class, () -> fr2.checkAndCombine(fr3));
+        assertEquals(fr1.toString(), "FlowRate{value=" + fr1.getValue() + " liters/min}");
     }
 }
