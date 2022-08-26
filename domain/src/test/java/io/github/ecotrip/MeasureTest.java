@@ -194,8 +194,10 @@ public class MeasureTest {
         var fr1 = FlowRate.of(40, FlowRate.FlowRateType.HOT);
         var fr2 = FlowRate.of(50, FlowRate.FlowRateType.HOT);
         var fr3 = FlowRate.of(3, FlowRate.FlowRateType.COLD);
+        var fr4 = FlowRate.of(5, FlowRate.FlowRateType.COLD);
 
         assertEquals(fr1.checkAndCombine(fr2), FlowRate.of(45, FlowRate.FlowRateType.HOT));
+        assertEquals(fr3.checkAndCombine(fr4), FlowRate.of(4, FlowRate.FlowRateType.COLD));
         assertThrows(IncompatibleMeasuresException.class, () -> fr2.checkAndCombine(fr3));
         assertEquals(fr1.toString(), "FlowRate{value=" + fr1.getValue() + " liters/min}");
     }
