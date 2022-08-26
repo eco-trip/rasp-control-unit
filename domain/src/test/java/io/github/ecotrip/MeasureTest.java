@@ -13,6 +13,7 @@ import io.github.ecotrip.measure.MeasureType;
 import io.github.ecotrip.measure.ambient.Brightness;
 import io.github.ecotrip.measure.ambient.Humidity;
 import io.github.ecotrip.measure.ambient.Temperature;
+import io.github.ecotrip.measure.energy.Current;
 
 public class MeasureTest {
     @Test
@@ -99,5 +100,29 @@ public class MeasureTest {
         assertEquals(coldWaterTemp.getType(), MeasureType.COLD_WATER_TEMPERATURE);
         assertEquals(hotWaterTemp.getType(), MeasureType.HOT_WATER_TEMPERATURE);
         assertThrows(IncompatibleMeasuresException.class, () -> roomTemp.isLessEqualThan(hotWaterTemp));
+    }
+
+    @Test
+    public void testCurrentByEquals() {
+        var c1 = Current.of(3.3);
+        var c2 = Current.of(3.3);
+        var c3 = Current.of(5);
+        assertEquals(c1, c2);
+        assertEquals(c1, c1);
+        assertNotEquals(c1, c3);
+        assertEquals(c1, c2);
+    }
+
+    @Test
+    public void testCurrentOps() {
+        var c1 = Current.of(3.3);
+        var c2 = Current.of(3.3);
+        var c3 = Current.of(5);
+        assertTrue(c1.isGreaterEqualThan(c2));
+        assertFalse(c2.isGreaterEqualThan(c3));
+        assertFalse(c3.isLessEqualThan(c1));
+        assertTrue(c3.isGreaterEqualThan(c1));
+        assertEquals(c1.checkAndCombine(c2), Current.of(6.6));
+        assertEquals(c1.toString(), "Current{value=" + c1.getValue() + " amps}");
     }
 }
