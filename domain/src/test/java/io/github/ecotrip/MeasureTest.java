@@ -15,6 +15,7 @@ import io.github.ecotrip.measure.ambient.Humidity;
 import io.github.ecotrip.measure.ambient.Temperature;
 import io.github.ecotrip.measure.energy.Current;
 import io.github.ecotrip.measure.energy.Resistance;
+import io.github.ecotrip.measure.energy.Voltage;
 
 public class MeasureTest {
     @Test
@@ -147,5 +148,15 @@ public class MeasureTest {
         assertTrue(r3.isLessEqualThan(r1));
         assertFalse(r3.isGreaterEqualThan(r1));
         assertThrows(IncompatibleMeasuresException.class, () -> r1.isGreaterEqualThan(Current.of(5)));
+    }
+
+    @Test
+    public void testVoltageByEquals() {
+        var v1 = Voltage.of(15);
+        var v2 = Voltage.of(15);
+        var v3 = Voltage.of(3);
+        assertEquals(v1, v2);
+        assertEquals(v1, v1);
+        assertNotEquals(v1, v3);
     }
 }
