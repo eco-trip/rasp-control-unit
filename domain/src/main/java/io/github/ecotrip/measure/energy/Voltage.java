@@ -27,6 +27,10 @@ public class Voltage extends CombinableMeasure {
         return new Voltage(volts);
     }
 
+    public static Voltage of(Current current, Resistance resistance) {
+        return Voltage.of(current.getValue() * resistance.getValue());
+    }
+
     @Override
     protected CombinableMeasure combine(CombinableMeasure with) {
         return Voltage.of(getValue() + with.getValue());

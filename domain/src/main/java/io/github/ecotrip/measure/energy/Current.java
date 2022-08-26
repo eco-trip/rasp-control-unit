@@ -21,6 +21,10 @@ public class Current extends CombinableMeasure {
         return new Current(amps);
     }
 
+    public static Current of(Voltage voltage, Resistance resistance) {
+        return new Current(voltage.getValue() / resistance.getValue());
+    }
+
     @Override
     public String toString() {
         return "Current{"

@@ -21,6 +21,10 @@ public class Resistance extends Measure {
         return new Resistance(ohms);
     }
 
+    public static Resistance of(final Current current, final Voltage voltage) {
+        return Resistance.of(voltage.getValue() / current.getValue());
+    }
+
     @Override
     public String toString() {
         return "Resistance{"
