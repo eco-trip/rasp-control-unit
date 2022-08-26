@@ -1,6 +1,7 @@
 package io.github.ecotrip;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.UUID;
 
@@ -19,6 +20,7 @@ public class EntityTest {
         assertEquals(entity1.getIdentifier(), stringId);
         assertEquals(entity2.getIdentifier(), numberId);
         assertEquals(entity3.getIdentifier(), uuid);
+        assertThrows(IllegalStateException.class, () -> new Entity<UUID>(null){});
     }
 
     @Test
