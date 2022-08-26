@@ -26,6 +26,7 @@ public class MeasureTest {
         assertEquals(b1, b2);
         assertEquals(b1, b1);
         assertNotEquals(b1, b3);
+        assertNotEquals(b1.hashCode(), b3.hashCode());
     }
 
     @Test
@@ -71,6 +72,7 @@ public class MeasureTest {
         assertEquals(t1, t2);
         assertEquals(t1, t1);
         assertNotEquals(t1, t3);
+        assertFalse(t1.equals(Brightness.of(30)));
     }
 
     @Test
@@ -126,6 +128,7 @@ public class MeasureTest {
         assertTrue(c3.isGreaterEqualThan(c1));
         assertEquals(c1.checkAndCombine(c2), Current.of(6.6));
         assertEquals(c1.toString(), "Current{value=" + c1.getValue() + " amps}");
+        assertEquals(Current.of(Voltage.of(1500), Resistance.of(100)), Current.of(15));
     }
 
     @Test
@@ -148,6 +151,8 @@ public class MeasureTest {
         assertTrue(r3.isLessEqualThan(r1));
         assertFalse(r3.isGreaterEqualThan(r1));
         assertThrows(IncompatibleMeasuresException.class, () -> r1.isGreaterEqualThan(Current.of(5)));
+        assertEquals(r1.toString(), "Resistance{value=" + r1.getValue() + " ohm}");
+        assertEquals(Resistance.of(Current.of(15), Voltage.of(1500)), Resistance.of(100));
     }
 
     @Test
@@ -158,5 +163,15 @@ public class MeasureTest {
         assertEquals(v1, v2);
         assertEquals(v1, v1);
         assertNotEquals(v1, v3);
+    }
+
+    @Test
+    public void testVoltageOps() {
+        var v1 = Voltage.of(15);
+        var v2 = Voltage.of(3);
+        assertEquals(v1.checkAndCombine(v2), Voltage.of(18));
+        assertThrows(IncompatibleMeasuresException.class, () -> v1.checkAndCombine(Current.of(10)));
+        assertEquals(v1.toString(), "Voltage{value=" + v1.getValue() + " volts}");
+        assertEquals(Voltage.of(Current.of(15), Resistance.of(100)), Voltage.of(1500));
     }
 }
