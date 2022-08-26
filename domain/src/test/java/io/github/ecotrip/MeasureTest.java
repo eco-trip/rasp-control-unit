@@ -14,6 +14,7 @@ import io.github.ecotrip.measure.ambient.Brightness;
 import io.github.ecotrip.measure.ambient.Humidity;
 import io.github.ecotrip.measure.ambient.Temperature;
 import io.github.ecotrip.measure.energy.Current;
+import io.github.ecotrip.measure.energy.Resistance;
 
 public class MeasureTest {
     @Test
@@ -124,5 +125,27 @@ public class MeasureTest {
         assertTrue(c3.isGreaterEqualThan(c1));
         assertEquals(c1.checkAndCombine(c2), Current.of(6.6));
         assertEquals(c1.toString(), "Current{value=" + c1.getValue() + " amps}");
+    }
+
+    @Test
+    public void testResistanceByEquals() {
+        var r1 = Resistance.of(5);
+        var r2 = Resistance.of(5);
+        var r3 = Resistance.of(3);
+        assertEquals(r1, r2);
+        assertEquals(r1, r1);
+        assertNotEquals(r1, r3);
+    }
+
+    @Test
+    public void testResistanceOps() {
+        var r1 = Resistance.of(5);
+        var r2 = Resistance.of(5);
+        var r3 = Resistance.of(3);
+        assertTrue(r1.isGreaterEqualThan(r3));
+        assertTrue(r1.isGreaterEqualThan(r2));
+        assertTrue(r3.isLessEqualThan(r1));
+        assertFalse(r3.isGreaterEqualThan(r1));
+        assertThrows(IncompatibleMeasuresException.class, () -> r1.isGreaterEqualThan(Current.of(5)));
     }
 }
