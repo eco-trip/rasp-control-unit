@@ -30,7 +30,7 @@ tasks {
 
     jacocoTestCoverageVerification {
         violationRules {
-            rule { limit { minimum = BigDecimal.valueOf(0.0) } }
+            rule { limit { minimum = BigDecimal.valueOf(0.6) } }
         }
     }
 
