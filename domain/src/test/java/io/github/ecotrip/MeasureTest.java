@@ -3,12 +3,16 @@ package io.github.ecotrip;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
+import io.github.ecotrip.measure.IncompatibleMeasuresException;
+import io.github.ecotrip.measure.MeasureType;
 import io.github.ecotrip.measure.ambient.Brightness;
 import io.github.ecotrip.measure.ambient.Humidity;
+import io.github.ecotrip.measure.ambient.Temperature;
 
 public class MeasureTest {
     @Test
@@ -53,5 +57,47 @@ public class MeasureTest {
         assertTrue(h3.isLessEqualThan(h1));
         assertFalse(h3.isGreaterEqualThan(h1));
         assertEquals(h1.toString(), "Humidity{value=" + h1.getValue() + "%}");
+    }
+
+    @Test
+    public void testTemperatureByEquals() {
+        var coldWaterPipe = Temperature.Environment.COLD_WATER_PIPE;
+        final Temperature t1 = Temperature.of(25, coldWaterPipe);
+        final Temperature t2 = Temperature.of(25, coldWaterPipe);
+        final Temperature t3 = Temperature.of(12, coldWaterPipe);
+        assertEquals(t1, t2);
+        assertEquals(t1, t1);
+        assertNotEquals(t1, t3);
+    }
+
+    @Test
+    public void testTemperatureOps() {
+        var coldWaterPipe = Temperature.Environment.COLD_WATER_PIPE;
+        final Temperature t1 = Temperature.of(25, coldWaterPipe);
+        final Temperature t2 = Temperature.of(25, coldWaterPipe);
+        final Temperature t3 = Temperature.of(12, coldWaterPipe);
+        assertTrue(t1.isGreaterEqualThan(t2));
+        assertTrue(t2.isGreaterEqualThan(t3));
+        assertTrue(t3.isLessEqualThan(t2));
+        assertFalse(t1.isLessEqualThan(t3));
+        assertFalse(t3.isGreaterEqualThan(t1));
+    }
+
+    @Test
+    public void testTemperatureEnvironment() {
+        var env1 = Temperature.Environment.ROOM;
+        var env2 = Temperature.Environment.HOT_WATER_PIPE;
+        var env3 = Temperature.Environment.COLD_WATER_PIPE;
+        var roomTemp = Temperature.of(20, env1);
+        var hotWaterTemp = Temperature.of(50, env2);
+        var coldWaterTemp = Temperature.of(10, env3);
+        assertNotEquals(roomTemp, hotWaterTemp);
+        assertNotEquals(roomTemp, coldWaterTemp);
+        assertEquals(roomTemp, Temperature.of(20, env1));
+        assertNotEquals(coldWaterTemp, hotWaterTemp);
+        assertEquals(roomTemp.getType(), MeasureType.ROOM_TEMPERATURE);
+        assertEquals(coldWaterTemp.getType(), MeasureType.COLD_WATER_TEMPERATURE);
+        assertEquals(hotWaterTemp.getType(), MeasureType.HOT_WATER_TEMPERATURE);
+        assertThrows(IncompatibleMeasuresException.class, () -> roomTemp.isLessEqualThan(hotWaterTemp));
     }
 }
