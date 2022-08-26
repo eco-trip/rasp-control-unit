@@ -56,7 +56,7 @@ public abstract class Measure {
 
     @Override
     public int hashCode() {
-        return Objects.hash(getValue());
+        return Objects.hash(getValue(), getType());
     }
 
     /**
