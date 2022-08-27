@@ -115,7 +115,7 @@
 			}
 		],
 		["@semantic-release/github", {
-            "assets":"/*/build/libs/*.jar"
+            "assets":"*/build/libs/*.jar"
         }],
 		"@semantic-release/git"
 	]
