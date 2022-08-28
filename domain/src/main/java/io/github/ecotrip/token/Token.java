@@ -2,6 +2,9 @@ package io.github.ecotrip.token;
 
 import java.util.Objects;
 
+/**
+ * Represents the authorization token
+ */
 public class Token {
     private final String value;
 
@@ -15,8 +18,12 @@ public class Token {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Token token = (Token) o;
         return getValue().equals(token.getValue());
     }
@@ -32,8 +39,8 @@ public class Token {
 
     @Override
     public String toString() {
-        return "Token{" +
-                "value='" + value + '\'' +
-                '}';
+        return "Token{"
+                + "value='" + value + '\''
+                + '}';
     }
 }

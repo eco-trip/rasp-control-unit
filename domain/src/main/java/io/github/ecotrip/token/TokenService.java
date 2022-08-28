@@ -2,6 +2,9 @@ package io.github.ecotrip.token;
 
 import java.util.Optional;
 
+/**
+ * Represents a singleton to manage the current Token
+ */
 public class TokenService {
     private Token token;
 

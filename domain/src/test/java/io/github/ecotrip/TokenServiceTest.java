@@ -1,16 +1,16 @@
 package io.github.ecotrip;
 
-import io.github.ecotrip.token.Token;
-import io.github.ecotrip.token.TokenService;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
 
+import io.github.ecotrip.token.Token;
+import io.github.ecotrip.token.TokenService;
 public class TokenServiceTest {
 
     @Test
