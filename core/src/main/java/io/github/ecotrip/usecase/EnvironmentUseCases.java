@@ -10,7 +10,8 @@ import io.github.ecotrip.sensor.Detection;
 import io.github.ecotrip.sensor.Sensor;
 
 /**
- * Contains all the use cases related to the measurements of environmental factors.
+ * Contains all the use cases related to the measurements
+ * of environmental factors (e.g room temperature).
  * @param <ID> is the identifier's type.
  */
 public class EnvironmentUseCases<ID> {
@@ -48,7 +49,7 @@ public class EnvironmentUseCases<ID> {
     }
 
     /**
-     * Builder used to dynamically create an EnvironmentUseCases instance.
+     * Builder used to dynamically create an {@link EnvironmentUseCases} instance.
      * @param <ID> is the identifier's type.
      */
     public static class Builder<ID> {
@@ -78,8 +79,8 @@ public class EnvironmentUseCases<ID> {
         }
 
         /**
-         * Constructor method, following the Builder pattern.
-         * @return the built EnvironmentUseCases instance.
+         * Constructor method, following the {@link Builder} pattern.
+         * @return the built {@link EnvironmentUseCases} instance.
          */
         public EnvironmentUseCases<ID> build() {
             var sensorsMap = new HashMap<SensorType, Sensor<ID>>();

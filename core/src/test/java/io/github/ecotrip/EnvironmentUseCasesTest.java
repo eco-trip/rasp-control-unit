@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.List;
 import java.util.UUID;
 
-import io.github.ecotrip.usecase.EnvironmentUseCases;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -17,6 +16,7 @@ import io.github.ecotrip.measure.ambient.Brightness;
 import io.github.ecotrip.measure.ambient.Humidity;
 import io.github.ecotrip.measure.ambient.Temperature;
 import io.github.ecotrip.sensor.DetectionFactory;
+import io.github.ecotrip.usecase.EnvironmentUseCases;
 
 @ExtendWith(MockitoExtension.class)
 public class EnvironmentUseCasesTest {
