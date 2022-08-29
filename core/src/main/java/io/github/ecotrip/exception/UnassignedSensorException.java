@@ -1,4 +1,4 @@
-package io.github.ecotrip;
+package io.github.ecotrip.exception;
 
 /**
  * It's thrown when a use case accesses a sensor which is null.

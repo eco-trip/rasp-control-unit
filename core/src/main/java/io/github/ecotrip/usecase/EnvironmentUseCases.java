@@ -1,9 +1,10 @@
-package io.github.ecotrip;
+package io.github.ecotrip.usecase;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+import io.github.ecotrip.exception.UnassignedSensorException;
 import io.github.ecotrip.object.ObjectUtils;
 import io.github.ecotrip.sensor.Detection;
 import io.github.ecotrip.sensor.Sensor;
