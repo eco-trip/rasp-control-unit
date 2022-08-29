@@ -4,6 +4,7 @@ junit = "5.8.1"
 [libraries]
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
 spotbugs = { module = "gradle.plugin.com.github.spotbugs.snom:spotbugs-gradle-plugin", version = "4.7.2"}
+mockito = { module = "org.mockito:mockito-junit-jupiter", version = "4.6.1" }
 
 [bundles]
 
