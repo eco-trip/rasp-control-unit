@@ -1,14 +1,17 @@
 package io.github.ecotrip;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.jupiter.api.Test;
 
 import io.github.ecotrip.execution.Execution;
-
+import io.github.ecotrip.execution.Futures;
 
 public class ExecutionTest {
     @Test
@@ -41,4 +44,14 @@ public class ExecutionTest {
         assertTrue(time1 >= Execution.SECOND_IN_MILLIS);
     }
 
+    @Test
+    public void testFuturesOps() {
+        var fut1 = CompletableFuture.completedFuture(5);
+        assertEquals(5, Futures.safeGet(fut1, Execution.SECOND_IN_MILLIS));
+        var fut2 = CompletableFuture.completedFuture(2);
+        var sum = Futures.thenAll(List.of(fut1, fut2),
+                numbers -> numbers.stream().reduce(Integer::sum)).join();
+        assertTrue(sum.isPresent());
+        assertEquals(7, sum.get());
+    }
 }
