@@ -33,8 +33,8 @@ public class Futures {
      */
     public static <T, U> CompletableFuture<U> thenAll(List<CompletableFuture<T>> futures, Function<List<T>, U> fn,
                                                       final int timeoutInMillis) {
-        return mergeFutures(futures).thenApply(unused -> {
-            List<T> results = futures.stream()
+        return CompletableFuture.supplyAsync(() -> {
+            var results = futures.stream()
                     .map(f -> safeGet(f, timeoutInMillis))
                     .filter(Objects::nonNull)
                     .collect(Collectors.toUnmodifiableList());
