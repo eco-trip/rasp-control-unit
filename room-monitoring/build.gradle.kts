@@ -9,6 +9,10 @@ repositories {
 }
 
 dependencies {
+    implementation(project(":utils"))
+    implementation(project(":domain"))
+    implementation(project(":core"))
+    testImplementation(libs.mockito)
     testImplementation(libs.junit.jupiter)
 }
 
