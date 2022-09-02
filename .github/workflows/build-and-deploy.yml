@@ -9,7 +9,8 @@ on:
   pull_request:
 
 env:
-  GITHUB_USERNAME: ${{ github.actor }}
+  GH_PACKAGES_USERNAME: amarfoglia
+  GH_PACKAGES_TOKEN: ${{ secrets.GH_PACKAGES_TOKEN }}
 
 jobs:
   build:
