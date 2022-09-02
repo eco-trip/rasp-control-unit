@@ -46,7 +46,7 @@ public class SensorsTest {
     }
 
     @Test
-    public void testCreation() throws IOException {
+    public void testBH1750() throws IOException {
         // create random set of sample data
         var sampleA = "0A".getBytes(StandardCharsets.UTF_8); // equals to 12353.0 lux
         var sampleB = "0B".getBytes(StandardCharsets.UTF_8); // equals to 12354.0 lux
