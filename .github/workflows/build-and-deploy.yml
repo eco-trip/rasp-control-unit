@@ -8,6 +8,9 @@ on:
       - 'README.md'
   pull_request:
 
+env:
+  GITHUB_USERNAME: amarfoglia
+
 jobs:
   build:
     runs-on: ubuntu-latest
