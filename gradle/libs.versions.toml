@@ -1,12 +1,25 @@
 [versions]
 junit = "5.8.1"
+slf4j = "2.0.0-alpha1"
+pi4j = "2.2.0-issue26"
 
 [libraries]
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
 spotbugs = { module = "gradle.plugin.com.github.spotbugs.snom:spotbugs-gradle-plugin", version = "4.7.2"}
 mockito = { module = "org.mockito:mockito-junit-jupiter", version = "4.6.1" }
+slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
+slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4j" }
+pi4j-core = { module = "io.github.meboo.pi4j:pi4j-core", version.ref = "pi4j" }
+pi4j-plugin-raspberrypi = { module = "io.github.meboo.pi4j:pi4j-plugin-raspberrypi", version.ref = "pi4j" }
+pi4j-plugin-pigpio = { module = "io.github.meboo.pi4j:pi4j-plugin-pigpio", version.ref = "pi4j" }
+pi4j-plugin-linuxfs = { module = "io.github.meboo.pi4j:pi4j-plugin-linuxfs", version.ref = "pi4j" }
+pi4j-test = { module = "io.github.meboo.pi4j:pi4j-test", version.ref = "pi4j" }
+
+jsch = { module = "com.jcraft:jsch", version = "0.1.44-1" }
 
 [bundles]
+slf4j = ["slf4j-api", "slf4j-simple"]
+pi4j = ["pi4j-core", "pi4j-plugin-raspberrypi", "pi4j-plugin-pigpio", "pi4j-plugin-linuxfs"]
 
 [plugins]
 gradle-enterprise = { id = "com.gradle.enterprise", version = "3.10" }
