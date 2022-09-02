@@ -9,7 +9,7 @@ on:
   pull_request:
 
 env:
-  GITHUB_USERNAME: amarfoglia
+  GITHUB_USERNAME: ${{ github.actor }}
 
 jobs:
   build:
