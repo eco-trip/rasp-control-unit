@@ -21,3 +21,6 @@ gradle-app.setting
 build
 
 node_modules
+
+# Ignore vscode autobuild bin directory that is not using Gradle (why not?)
+**/bin/
