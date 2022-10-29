@@ -30,10 +30,6 @@ public class SensorsTest {
 
     @BeforeEach
     public void beforeTest() throws Pi4JException {
-        // Initialize Pi4J with auto context
-        // An auto context enabled AUTO-DETECT loading
-        // which will load any detected Pi4J extension
-        // libraries (Platforms and Providers) from the class path
         pi4j = Pi4J.newAutoContext();
         assertNotNull(pi4j.providers());
     }
@@ -51,6 +47,7 @@ public class SensorsTest {
         var sampleA = "0A".getBytes(StandardCharsets.UTF_8); // equals to 12353.0 lux
         var sampleB = "0B".getBytes(StandardCharsets.UTF_8); // equals to 12354.0 lux
         var sampleC = "0C".getBytes(StandardCharsets.UTF_8); // equals to 12355.0 lux
+        var sampleD = "".getBytes(StandardCharsets.UTF_8);
 
         // create I2C config
         var config = I2C.newConfigBuilder(pi4j)
@@ -77,7 +74,7 @@ public class SensorsTest {
             assertEquals(Brightness.of(12354), waitAndExtractMeasure(brightnessSensor.detect()));
             i2c.out().write(sampleC);
             assertEquals(Brightness.of(12355), waitAndExtractMeasure(brightnessSensor.detect()));
-
+            i2c.out().write(sampleD);
             assertEquals(Brightness.of(0), waitAndExtractMeasure(brightnessSensor.detect()));
         }
     }
