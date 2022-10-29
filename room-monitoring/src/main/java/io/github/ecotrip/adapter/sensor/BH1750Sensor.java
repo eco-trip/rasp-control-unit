@@ -15,7 +15,7 @@ import io.github.ecotrip.sensor.Sensor;
 
 /**
  * Ambient light sensor, implementation for BH1750 model.
- * @param <ID>
+ * @param <ID> uniquely identifies the sensor.
  */
 public class BH1750Sensor<ID> extends Sensor<ID> {
     private final I2C channel;
@@ -41,7 +41,6 @@ public class BH1750Sensor<ID> extends Sensor<ID> {
 
     @Override
     protected boolean isMeasureValid(final Measure measure) {
-        System.out.println(measure);
         return measure.getValue() >= 0;
     }
 
@@ -51,7 +50,7 @@ public class BH1750Sensor<ID> extends Sensor<ID> {
 
     /**
      * Public entrypoint for {@link BH1750Sensor} construction.
-     * @param <ID>
+     * @param <ID> uniquely identifies the sensor instance.
      */
     public static class Builder<ID> extends SensorBuilder<ID> {
         private I2C i2c;
