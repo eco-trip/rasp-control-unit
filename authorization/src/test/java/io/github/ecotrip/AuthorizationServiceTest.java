@@ -34,7 +34,7 @@ public class AuthorizationServiceTest {
         NfcAdapter mockedNfc = Mockito.mock(NfcAdapter.class);
         when(mockedNfc.initTagAndWaitForNearbyDevice()).thenReturn(CompletableFuture.runAsync(() -> {
             try {
-                Thread.sleep(100);
+                Thread.sleep(20);
             } finally {
                 return;
             }
@@ -48,7 +48,7 @@ public class AuthorizationServiceTest {
         var service = AuthorizationService.of(engine, authorizationUseCases);
 
         var future = service.start();
-        Execution.safeSleep(500);
+        Execution.safeSleep(80);
         service.notify(Token.of("TEST"));
 
         future.complete(null);
