@@ -12,6 +12,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import io.github.ecotrip.adapter.InputAdapter;
 import io.github.ecotrip.adapter.NfcAdapter;
@@ -21,11 +23,12 @@ import io.github.ecotrip.token.Token;
 import io.github.ecotrip.usecase.AuthorizationUseCases;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class AuthorizationServiceTest {
 
     private void lazyFuture(CompletableFuture fut) {
         try {
-            System.out.println("SLEEEEP START");
+            // System.out.println("SLEEEEP START");
             Thread.sleep(100);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
@@ -53,6 +56,7 @@ public class AuthorizationServiceTest {
         var service = AuthorizationService.of(engine, authorizationUseCases);
 
         var future = service.start();
+        // System.out.println("SLEEEEP");
         lazyFuture(initFut);
         Execution.safeSleep(100);
         service.notify(Token.of("TEST"));
