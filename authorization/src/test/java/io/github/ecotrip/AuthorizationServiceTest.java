@@ -23,6 +23,16 @@ import io.github.ecotrip.usecase.AuthorizationUseCases;
 @ExtendWith(MockitoExtension.class)
 public class AuthorizationServiceTest {
 
+    private void lazyFuture(CompletableFuture fut) {
+        try {
+            System.out.println("SLEEEEP START");
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } finally {
+            fut.complete(null);
+        }
+    }
     @Test
     public void testStart() {
         var engine = EngineFactory.createScheduledEngine(1);
@@ -32,14 +42,9 @@ public class AuthorizationServiceTest {
         when(mockedInput.requireToken()).thenReturn(CompletableFuture.completedFuture(null));
 
         NfcAdapter mockedNfc = Mockito.mock(NfcAdapter.class);
-        when(mockedNfc.initTagAndWaitForNearbyDevice()).thenReturn(CompletableFuture.runAsync(() -> {
-            try {
-                Thread.sleep(20);
-            } finally {
-                return;
-            }
-        }));
 
+        var initFut = new CompletableFuture();
+        when(mockedNfc.initTagAndWaitForNearbyDevice()).thenReturn(initFut);
         when(mockedNfc.transmit(any(Token.class))).thenReturn(CompletableFuture.completedFuture(null));
         when(mockedNfc.reset()).thenReturn(CompletableFuture.completedFuture(null));
 
@@ -48,7 +53,8 @@ public class AuthorizationServiceTest {
         var service = AuthorizationService.of(engine, authorizationUseCases);
 
         var future = service.start();
-        Execution.safeSleep(80);
+        lazyFuture(initFut);
+        Execution.safeSleep(100);
         service.notify(Token.of("TEST"));
 
         future.complete(null);
