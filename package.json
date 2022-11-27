@@ -1,6 +1,6 @@
 {
   "name": "rasp-control-unit",
-  "version": "1.7.0",
+  "version": "1.8.0",
   "devDependencies": {
     "@semantic-release/commit-analyzer": "^9.0.2",
     "@semantic-release/git": "^10.0.1",
