@@ -30,3 +30,7 @@ dependencies {
 tasks.withType<Test> {
     useJUnitPlatform()
 }
+
+spotbugs {
+    excludeFilter.set(file("config/spotbugs-exclude.xml"));
+}
