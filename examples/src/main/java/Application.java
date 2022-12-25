@@ -8,7 +8,10 @@ import java.util.concurrent.CompletableFuture;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.pi4j.Pi4J;
+import com.pi4j.io.spi.SpiBus;
+import com.pi4j.io.spi.SpiChipSelect;
 
+import io.github.ecotrip.AuthorizationService;
 import io.github.ecotrip.Generated;
 import io.github.ecotrip.RoomMonitoringService;
 import io.github.ecotrip.adapter.AnalogChannel;
@@ -19,11 +22,15 @@ import io.github.ecotrip.execution.engine.EngineFactory;
 import io.github.ecotrip.measure.Measure;
 import io.github.ecotrip.measure.ambient.Temperature;
 import io.github.ecotrip.measure.water.FlowRate;
+import io.github.ecotrip.nfc.Pn532Controller;
+import io.github.ecotrip.nfc.Pn532NfcAdapter;
+import io.github.ecotrip.nfc.channel.Pn532Channel;
 import io.github.ecotrip.object.Pair;
 import io.github.ecotrip.sensor.Detection;
 import io.github.ecotrip.sensor.DetectionFactory;
 import io.github.ecotrip.serializer.JsonSerializer;
 import io.github.ecotrip.serializer.MeasureSerializer;
+import io.github.ecotrip.usecase.AuthorizationUseCases;
 import io.github.ecotrip.usecase.ConsumptionUseCases;
 import io.github.ecotrip.usecase.EnvironmentUseCases;
 
@@ -91,8 +98,18 @@ public class Application {
                 serializer
         );
 
+        // Create NFC adapter
+        var nfcChannel = Pn532Channel.createSpi(pi4j, SpiBus.BUS_0, SpiChipSelect.CS_1);
+        var nfcAdapter = Pn532NfcAdapter.of(Pn532Controller.of(nfcChannel));
+        // Create the second engine
+        Engine engine2 = EngineFactory.createScheduledEngine(1);
+        // Create Authorization Service
+        var authorizationUseCases = AuthorizationUseCases.of(awsAdapter, nfcAdapter);
+        var authorizationService = AuthorizationService.of(engine2, authorizationUseCases);
+        awsAdapter.addObserver(authorizationService);
+
         awsAdapter.connect()
-                .thenCompose(u -> CompletableFuture.allOf(roomMonitoringService.start()))
+                .thenCompose(u -> CompletableFuture.allOf(authorizationService.start(), roomMonitoringService.start()))
                 .exceptionally(t -> {
                     t.printStackTrace();
                     awsAdapter.disconnect();
