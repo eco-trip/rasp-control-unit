@@ -1,8 +1,13 @@
 plugins {
     id("java-quality-common-convention")
+    application
 }
 
 group = "io.github.ecotrip"
+
+application {
+    mainClass.set("Application")
+}
 
 repositories {
     maven {
