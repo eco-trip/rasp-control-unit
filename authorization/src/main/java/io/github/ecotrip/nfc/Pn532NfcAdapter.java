@@ -18,7 +18,7 @@ import io.github.ecotrip.token.Token;
 public class Pn532NfcAdapter implements NfcAdapter {
     private static final int INIT_TIMEOUT_IN_MS = 1000;
     private static final int GENERAL_ERROR_CODE = -1;
-    private static final String BASE_URL = "ecotrip.github.com/";
+    private static final String BASE_URL = "ecotrip.meblabs.dev/";
     private final Pn532Controller nfcReader;
 
     private Pn532NfcAdapter(final Pn532Controller nfcReader) {
@@ -84,9 +84,11 @@ public class Pn532NfcAdapter implements NfcAdapter {
                 return status;
             }
 
+            /*
             for (byte b : rwbuf) {
                 Execution.logsInfo(Integer.toHexString(b & 0xff) + " ");
             }
+            */
 
             byte p1 = rwbuf[C_APDU_P1];
             byte p2 = rwbuf[C_APDU_P2];
