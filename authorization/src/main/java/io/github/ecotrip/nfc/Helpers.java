@@ -122,13 +122,13 @@ public class Helpers {
         (byte) 0xFF // write access 0x0 = granted | 0xFF = deny
     };
 
-    public static final int NDEF_MAX_LENGTH = 128;
+    public static final int NDEF_MAX_LENGTH = 255;
 
     /**
      * build URI Message
      */
     public static byte[] buildUriNdefMessage(String uriToEncode) throws IOException {
-        var prefix = new byte[] { (byte) 0x02 };
+        var prefix = new byte[] { (byte) 0x04 }; // https://
         var uri = uriToEncode.getBytes();
 
         var outputStream = new ByteArrayOutputStream();
@@ -143,9 +143,12 @@ public class Helpers {
 
         byte[] messageEncoded = message.toByteArray();
 
+        String messageLog = "";
         for (byte b : messageEncoded) {
-            Execution.logsInfo(Integer.toHexString((b & 0xff)).concat(" "));
+            messageLog += Integer.toHexString((b & 0xff)).concat(" ");
         }
+
+        Execution.logsInfo("ENCODED MESSAGE: " + messageLog);
 
         // try (var fos = new FileOutputStream("/root/ndef-file")) {
         //    fos.write(messageEncoded);

@@ -84,11 +84,12 @@ public class Pn532NfcAdapter implements NfcAdapter {
                 return status;
             }
 
-            /*
+            String rwbufLog = "";
             for (byte b : rwbuf) {
-                Execution.logsInfo(Integer.toHexString(b & 0xff) + " ");
+                rwbufLog += Integer.toHexString(b & 0xff) + " ";
             }
-            */
+
+            Execution.logsInfo("RW BUFF: " + rwbufLog);
 
             byte p1 = rwbuf[C_APDU_P1];
             byte p2 = rwbuf[C_APDU_P2];
