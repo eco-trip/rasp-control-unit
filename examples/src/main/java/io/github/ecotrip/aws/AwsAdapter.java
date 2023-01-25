@@ -100,7 +100,7 @@ public class AwsAdapter extends InputAdapter implements OutputAdapter<String, St
             notifyObservers(Token.of(shadowToken));
             LOGGER.info("Received shadow token: " + shadowToken);
         } else {
-            LOGGER.warn("Received invalid or empty token");
+            LOGGER.warn("Received invalid or empty token from state: " + state.toString());
         }
     }
 
