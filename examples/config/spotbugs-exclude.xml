@@ -6,4 +6,7 @@
   <Match>
     <Package name="io.github.ecotrip.aws" />
   </Match>
+  <Match>
+  <Package name="edu.umd.cs.findbugs.ba.jsr305" />
+  </Match>
 </FindBugsFilter>

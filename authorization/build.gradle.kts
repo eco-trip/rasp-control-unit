@@ -8,8 +8,8 @@ repositories {
     maven {
         url = uri("https://maven.pkg.github.com/meboo/pi4j-v2-issue26")
         credentials {
-            username = project.findProperty("gpr.user") as String? ?: System.getenv("GH_PACKAGES_USERNAME")
-            password = project.findProperty("gpr.key") as String? ?: System.getenv("GH_PACKAGES_TOKEN")
+            username = System.getenv("GH_PACKAGES_USERNAME") // project.findProperty("gpr.user") as String? ?:
+            password = System.getenv("GH_PACKAGES_TOKEN") // project.findProperty("gpr.key") as String? ?:
         }
     }
     mavenCentral()

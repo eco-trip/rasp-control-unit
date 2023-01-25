@@ -83,7 +83,7 @@ public class Helpers {
         5, // MODE: PICC only, Passive only
 
         0x04, 0x00, // SENS_RES
-        0x00, 0x00, 0x00, // NFCID1
+        0x12, 0x34, 0x56, // NFCID1 -> default 0,0,0
         0x20, // SEL_RES
 
         // FELICA PARAMS
