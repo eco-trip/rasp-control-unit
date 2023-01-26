@@ -22,6 +22,8 @@ build
 
 node_modules
 
+*.log
+
 cert
 
 # Ignore vscode autobuild bin directory that is not using Gradle (why not?)

@@ -108,7 +108,8 @@ public class Application {
         var authorizationService = AuthorizationService.of(engine2, authorizationUseCases);
         awsAdapter.addObserver(authorizationService);
 
-        roomMonitoringService.start(); // BUG
+        roomMonitoringService.setDetectionInterval(1); // FAKE ACTION FOR SPOTBUG
+        // roomMonitoringService.start();
         awsAdapter.connect()
                 .thenCompose(u -> CompletableFuture.allOf(authorizationService.start()))
                 .exceptionally(t -> {
