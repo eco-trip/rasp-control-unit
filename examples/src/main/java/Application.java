@@ -109,6 +109,7 @@ public class Application {
         var authorizationUseCases = AuthorizationUseCases.of(awsAdapter, nfcAdapter);
         var authorizationService = AuthorizationService.of(engine2, authorizationUseCases);
         awsAdapter.addObserver(authorizationService);
+        awsAdapter.addObserver(roomMonitoringService);
 
         awsAdapter.connect()
                 .thenCompose(u -> CompletableFuture.allOf(roomMonitoringService.start(), authorizationService.start()))
