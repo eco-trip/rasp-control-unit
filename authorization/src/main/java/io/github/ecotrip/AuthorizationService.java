@@ -29,21 +29,21 @@ public class AuthorizationService implements Observer<Token> {
      * @return a {@link CompletableFuture} which represents the process on running state until finish.
      */
     public CompletableFuture<Void> start() {
-        return engine.submit(authorizationUseCases::bootstrap)
-                .thenCompose(u -> this.startNfcTagEmulation());
+        return engine.submit(() -> {
+            authorizationUseCases.bootstrap().join();
+            this.startNfcTagEmulation();
+        });
     }
 
-    private CompletableFuture<Void> startNfcTagEmulation() {
-        return CompletableFuture.runAsync(() -> {
-            while (true) {
-                try {
-                    authorizationUseCases.waitNearbyDevice().join();
-                    authorizationUseCases.transmitToken().join();
-                } catch (CancellationException | CompletionException ex) {
-                    logger.log(Level.WARNING, ex.getMessage());
-                }
+    private Void startNfcTagEmulation() {
+        while (true) {
+            try {
+                authorizationUseCases.waitNearbyDevice().join();
+                authorizationUseCases.transmitToken().join();
+            } catch (CancellationException | CompletionException ex) {
+                logger.log(Level.WARNING, ex.getMessage());
             }
-        });
+        }
     }
 
     public static AuthorizationService of(final Engine engine, final AuthorizationUseCases useCases) {

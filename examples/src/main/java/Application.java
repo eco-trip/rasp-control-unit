@@ -100,18 +100,19 @@ public class Application {
                 serializer
         );
 
+        // Create the second engine
+        Engine engine2 = EngineFactory.createScheduledEngine(2);
         // Create NFC adapter
         var nfcChannel = Pn532Channel.createSpi(pi4j, SpiBus.BUS_0, SpiChipSelect.CS_1);
-        var nfcAdapter = Pn532NfcAdapter.of(Pn532Controller.of(nfcChannel));
-        // Create the second engine
-        Engine engine2 = EngineFactory.createScheduledEngine(1);
+        var nfcAdapter = Pn532NfcAdapter.of(Pn532Controller.of(nfcChannel), engine2.getContext());
         // Create Authorization Service
         var authorizationUseCases = AuthorizationUseCases.of(awsAdapter, nfcAdapter);
         var authorizationService = AuthorizationService.of(engine2, authorizationUseCases);
         awsAdapter.addObserver(authorizationService);
 
+        // roomMonitoringService.setDetectionInterval(1);
         awsAdapter.connect()
-                .thenCompose(u -> CompletableFuture.allOf(authorizationService.start(), roomMonitoringService.start()))
+                .thenCompose(u -> CompletableFuture.allOf(roomMonitoringService.start(), authorizationService.start()))
                 .exceptionally(t -> {
                     t.printStackTrace();
                     awsAdapter.disconnect();

@@ -5,6 +5,7 @@ import static io.github.ecotrip.nfc.Helpers.*;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
 import io.github.ecotrip.Generated;
 import io.github.ecotrip.adapter.NfcAdapter;
@@ -20,16 +21,18 @@ public class Pn532NfcAdapter implements NfcAdapter {
     private static final int GENERAL_ERROR_CODE = -1;
     private static final String BASE_URL = "ecotrip.meblabs.dev/";
     private final Pn532Controller nfcReader;
+    private final Executor context;
 
-    private Pn532NfcAdapter(final Pn532Controller nfcReader) {
+    private Pn532NfcAdapter(final Pn532Controller nfcReader, Executor context) {
         this.nfcReader = nfcReader;
+        this.context = context;
         nfcReader.begin();
         Execution.safeSleep(INIT_TIMEOUT_IN_MS);
         checkNfcDeviceAvailability();
     }
 
-    public static Pn532NfcAdapter of(final Pn532Controller reader) {
-        return new Pn532NfcAdapter(reader);
+    public static Pn532NfcAdapter of(final Pn532Controller reader, Executor context) {
+        return new Pn532NfcAdapter(reader, context);
     }
 
     @Override
@@ -41,7 +44,7 @@ public class Pn532NfcAdapter implements NfcAdapter {
                 Execution.logsError(e.getMessage());
                 throw new RuntimeException(e);
             }
-        });
+        }, this.context);
     }
 
     @Override
@@ -52,7 +55,7 @@ public class Pn532NfcAdapter implements NfcAdapter {
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-        });
+        }, this.context);
     }
 
     @Override
@@ -63,7 +66,7 @@ public class Pn532NfcAdapter implements NfcAdapter {
             } catch (InterruptedException | IOException e) {
                 throw new RuntimeException(e);
             }
-        });
+        }, this.context);
     }
 
     /**
