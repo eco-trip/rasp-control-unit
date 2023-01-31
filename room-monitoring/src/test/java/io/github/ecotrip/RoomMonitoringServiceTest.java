@@ -50,7 +50,7 @@ public class RoomMonitoringServiceTest {
         var payload = new AtomicReference<>("");
 
         var service = RoomMonitoringService.of(engine, consumptionUseCases, environmentUseCases,
-                detectionFactory, (topic, msg) -> {
+                detectionFactory, msg -> {
                     payload.set(msg);
                     return CompletableFuture.completedFuture(null);
                 }, element -> element.getDetection().toString());

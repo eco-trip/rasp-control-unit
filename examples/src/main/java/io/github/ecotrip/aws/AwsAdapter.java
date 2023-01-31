@@ -1,6 +1,7 @@
 package io.github.ecotrip.aws;
 
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import org.slf4j.Logger;
@@ -23,9 +24,12 @@ import software.amazon.awssdk.iot.iotshadow.model.*;
 public class AwsAdapter extends InputAdapter implements OutputAdapter<String, String> {
     private static final Logger LOGGER = LoggerFactory.getLogger(AwsAdapter.class);
     private static final String TOKEN_PROPERTY = "token";
+    private static final String ROOM_PROPERTY = "room";
+    private static final String HOTEL_PROPERTY = "hotel";
     private final IotShadowClient shadow;
     private final MqttClientConnection connection;
     private final String thingName;
+    private String topic = "";
 
     private AwsAdapter(final MqttClientConnection connection, final String thingName) {
         this.shadow = new IotShadowClient(connection);
@@ -34,7 +38,7 @@ public class AwsAdapter extends InputAdapter implements OutputAdapter<String, St
     }
 
     @Override
-    public CompletableFuture<Void> sendMessage(String topic, String message) {
+    public CompletableFuture<Void> sendMessage(String message) {
         var msg = new MqttMessage(topic, message.getBytes(), QualityOfService.AT_LEAST_ONCE, false);
         return connection.publish(msg).thenRun(() -> {});
     }
@@ -50,8 +54,8 @@ public class AwsAdapter extends InputAdapter implements OutputAdapter<String, St
                 .thenRun(this::subscribeToUpdateShadow);
     }
 
-    public CompletableFuture<Void> disconnect() {
-        return connection.disconnect().thenRun(() -> LOGGER.info("AWS IoT adapter disconnected"));
+    public void disconnect() {
+        connection.disconnect().thenRun(() -> LOGGER.info("AWS IoT adapter disconnected"));
     }
 
     @Override
@@ -95,13 +99,27 @@ public class AwsAdapter extends InputAdapter implements OutputAdapter<String, St
     }
 
     private void handleStateResponse(final HashMap<String, Object> state) {
-        if (state != null && state.containsKey(TOKEN_PROPERTY)) {
-            var shadowToken = state.get(TOKEN_PROPERTY).toString();
-            notifyObservers(Token.of(shadowToken));
-            LOGGER.info("Received shadow token: " + shadowToken);
+        if (state != null) {
+            var shadowToken = checkAndGetStateField(state, TOKEN_PROPERTY);;
+            var roomId = checkAndGetStateField(state, ROOM_PROPERTY);
+            var hotelId = checkAndGetStateField(state, HOTEL_PROPERTY);
+            if (roomId.isPresent() && hotelId.isPresent()) {
+                this.topic = "ecotrip/" + hotelId.get() + "/" + roomId.get();
+            }
+            shadowToken.ifPresent(t -> notifyObservers(Token.of(t)));
         } else {
-            LOGGER.warn("Received invalid or empty token from state: " + state.toString());
+            LOGGER.warn("Received empty state");
         }
+    }
+
+    private static Optional<String> checkAndGetStateField(final HashMap<String, Object> state, String key) {
+        if (state.containsKey(key)) {
+            var value = state.get(key).toString();
+            LOGGER.info("[Shadow update] " + key + ": " + value);
+            return Optional.of(value);
+        }
+        LOGGER.warn("[Shadow update] Received invalid or empty " + key + " from state: " + state);
+        return Optional.empty();
     }
 
     /**

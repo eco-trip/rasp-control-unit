@@ -22,7 +22,6 @@ import io.github.ecotrip.usecase.EnvironmentUseCases;
  * the final {@link Detection} and send it through an {@link OutputAdapter}.
  */
 public class RoomMonitoringService {
-    private static final String DEFAULT_TOPIC = "ecotrip/detection";
     private static final int DEFAULT_DETECT_INTERVAL = Execution.SECOND_IN_MILLIS * 5;
     private final ConsumptionUseCases<UUID> consumptionUseCases;
     private final EnvironmentUseCases<UUID> environmentUseCases;
@@ -78,7 +77,7 @@ public class RoomMonitoringService {
         var mergedDetection = detections.stream().reduce(detectionFactory::merge);
         if (mergedDetection.isPresent()) {
             var message = this.serializer.serialize(DetectionWrapper.of(mergedDetection.get()));
-            return outputAdapter.sendMessage(DEFAULT_TOPIC, message)
+            return outputAdapter.sendMessage(message)
                     .thenRun(() -> Execution.logsInfo("Send message: " + message));
         }
         return CompletableFuture.failedFuture(new Throwable("An error is occurred during the detection"));
