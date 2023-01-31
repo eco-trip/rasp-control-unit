@@ -1,9 +1,11 @@
 package io.github.ecotrip;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
+import io.github.ecotrip.adapter.DetectionWrapper;
 import io.github.ecotrip.adapter.OutputAdapter;
 import io.github.ecotrip.adapter.Serializer;
 import io.github.ecotrip.execution.Execution;
@@ -18,26 +20,25 @@ import io.github.ecotrip.usecase.EnvironmentUseCases;
 /**
  * Contains the logic necessary to collect the data from the sensors, serialize
  * the final {@link Detection} and send it through an {@link OutputAdapter}.
- * @param <ID>
  */
-public class RoomMonitoringService<ID> {
+public class RoomMonitoringService {
     private static final String DEFAULT_TOPIC = "ecotrip/detection";
     private static final int DEFAULT_DETECT_INTERVAL = Execution.SECOND_IN_MILLIS * 5;
-    private final ConsumptionUseCases<ID> consumptionUseCases;
-    private final EnvironmentUseCases<ID> environmentUseCases;
-    private final DetectionFactory<ID> detectionFactory;
+    private final ConsumptionUseCases<UUID> consumptionUseCases;
+    private final EnvironmentUseCases<UUID> environmentUseCases;
+    private final DetectionFactory<UUID> detectionFactory;
     private final Engine engine;
     private final OutputAdapter<String, String> outputAdapter;
-    private final Serializer<Detection<ID>> serializer;
+    private final Serializer<DetectionWrapper> serializer;
     private int detectionInterval;
     private int consumptionRepetitions;
 
     private RoomMonitoringService(final Engine engine,
-                                  final ConsumptionUseCases<ID> consumptionUseCases,
-                                  final EnvironmentUseCases<ID> environmentUseCases,
-                                  final DetectionFactory<ID> detectionFactory,
+                                  final ConsumptionUseCases<UUID> consumptionUseCases,
+                                  final EnvironmentUseCases<UUID> environmentUseCases,
+                                  final DetectionFactory<UUID> detectionFactory,
                                   final OutputAdapter<String, String> outputAdapter,
-                                  final Serializer<Detection<ID>> serializer) {
+                                  final Serializer<DetectionWrapper> serializer) {
         this.engine = engine;
         this.consumptionUseCases = consumptionUseCases;
         this.environmentUseCases = environmentUseCases;
@@ -73,25 +74,25 @@ public class RoomMonitoringService<ID> {
         consumptionRepetitions = detectionInterval / Execution.SECOND_IN_MILLIS;
     }
 
-    private CompletableFuture<Void> sendData(final List<Detection<ID>> detections) {
+    private CompletableFuture<Void> sendData(final List<Detection<UUID>> detections) {
         var mergedDetection = detections.stream().reduce(detectionFactory::merge);
         if (mergedDetection.isPresent()) {
-            var message = this.serializer.serialize(mergedDetection.get());
+            var message = this.serializer.serialize(DetectionWrapper.of(mergedDetection.get()));
             return outputAdapter.sendMessage(DEFAULT_TOPIC, message)
                     .thenRun(() -> Execution.logsInfo("Send message: " + message));
         }
         return CompletableFuture.failedFuture(new Throwable("An error is occurred during the detection"));
     }
 
-    private CompletableFuture<Detection<ID>> computeConsumptionAverage(
-            final Supplier<CompletableFuture<Detection<ID>>> detectionSupplier) {
+    private CompletableFuture<Detection<UUID>> computeConsumptionAverage(
+            final Supplier<CompletableFuture<Detection<UUID>>> detectionSupplier) {
         final var initialAccumulator = CompletableFuture.completedFuture(detectionFactory.createEmpty());
         return engine.submitAndRepeat(acc -> detectionSupplier.get()
                         .thenCombine(acc, detectionFactory::merge), initialAccumulator, consumptionRepetitions, 1)
                 .thenApply(this::computeAverage);
     }
 
-    private Detection<ID> computeAverage(final Detection<ID> detection) {
+    private Detection<UUID> computeAverage(final Detection<UUID> detection) {
         var measure = detection.getMeasures().stream()
                 .map(m -> (CombinableMeasure) m)
                 .reduce(CombinableMeasure::checkAndCombine);
@@ -106,16 +107,15 @@ public class RoomMonitoringService<ID> {
      * @param detectionFactory simplify the {@link Detection} creation.
      * @param outputAdapter used to send the data outside.
      * @param serializer adapts the data format to the one required outside.
-     * @param <ID> represents the identifier's type.
      * @return the instance of {@link RoomMonitoringService}.
      * */
-    public static <ID> RoomMonitoringService<ID> of(final Engine engine,
-                                                    final ConsumptionUseCases<ID> consumptionUseCases,
-                                                    final EnvironmentUseCases<ID> environmentUseCases,
-                                                    final DetectionFactory<ID> detectionFactory,
+    public static RoomMonitoringService of(final Engine engine,
+                                                    final ConsumptionUseCases<UUID> consumptionUseCases,
+                                                    final EnvironmentUseCases<UUID> environmentUseCases,
+                                                    final DetectionFactory<UUID> detectionFactory,
                                                     final OutputAdapter<String, String> outputAdapter,
-                                                    final Serializer<Detection<ID>> serializer) {
-        return new RoomMonitoringService<>(engine, consumptionUseCases, environmentUseCases, detectionFactory,
+                                                    final Serializer<DetectionWrapper> serializer) {
+        return new RoomMonitoringService(engine, consumptionUseCases, environmentUseCases, detectionFactory,
                 outputAdapter, serializer);
     }
 }
