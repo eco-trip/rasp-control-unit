@@ -24,8 +24,8 @@ import software.amazon.awssdk.iot.iotshadow.model.*;
 public class AwsAdapter extends InputAdapter implements OutputAdapter<String, String> {
     private static final Logger LOGGER = LoggerFactory.getLogger(AwsAdapter.class);
     private static final String TOKEN_PROPERTY = "token";
-    private static final String ROOM_PROPERTY = "room";
-    private static final String HOTEL_PROPERTY = "hotel";
+    private static final String ROOM_PROPERTY = "roomId";
+    private static final String HOTEL_PROPERTY = "hotelId";
     private final IotShadowClient shadow;
     private final MqttClientConnection connection;
     private final String thingName;
@@ -39,6 +39,9 @@ public class AwsAdapter extends InputAdapter implements OutputAdapter<String, St
 
     @Override
     public CompletableFuture<Void> sendMessage(String message) {
+        if (topic.isEmpty()) {
+            return CompletableFuture.completedFuture(null);
+        }
         var msg = new MqttMessage(topic, message.getBytes(), QualityOfService.AT_LEAST_ONCE, false);
         return connection.publish(msg).thenRun(() -> {});
     }
@@ -105,6 +108,7 @@ public class AwsAdapter extends InputAdapter implements OutputAdapter<String, St
             var hotelId = checkAndGetStateField(state, HOTEL_PROPERTY);
             if (roomId.isPresent() && hotelId.isPresent()) {
                 this.topic = "ecotrip/" + hotelId.get() + "/" + roomId.get();
+                LOGGER.info("[Topic] " + topic);
             }
             shadowToken.ifPresent(t -> notifyObservers(Token.of(t)));
         } else {
