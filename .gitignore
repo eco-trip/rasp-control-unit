@@ -28,3 +28,7 @@ cert
 
 # Ignore vscode autobuild bin directory that is not using Gradle (why not?)
 **/bin/
+
+.vscode/*
+.metals/*
+.bloop/*

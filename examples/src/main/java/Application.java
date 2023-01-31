@@ -28,6 +28,7 @@ import io.github.ecotrip.nfc.channel.Pn532Channel;
 import io.github.ecotrip.object.Pair;
 import io.github.ecotrip.sensor.Detection;
 import io.github.ecotrip.sensor.DetectionFactory;
+import io.github.ecotrip.serializer.DetectionSerializer;
 import io.github.ecotrip.serializer.JsonSerializer;
 import io.github.ecotrip.serializer.MeasureSerializer;
 import io.github.ecotrip.usecase.AuthorizationUseCases;
@@ -47,7 +48,7 @@ public class Application {
 
     /**
      * main
-     * @param args
+     * @param args an array of strings representing the command line arguments passed to the program
      */
     public static void main(String[] args) {
         var pi4j = Pi4J.newAutoContext();
@@ -86,7 +87,9 @@ public class Application {
         // Configure Serializer
         var javaTimeModule = new JavaTimeModule();
         var measureModule = new SimpleModule().addSerializer(Measure.class, new MeasureSerializer());
-        Serializer<Detection<UUID>> serializer = JsonSerializer.of(javaTimeModule, measureModule);
+        var detectionModule = new SimpleModule().addSerializer(Detection.class, new DetectionSerializer());
+
+        Serializer<Detection<UUID>> serializer = JsonSerializer.of(javaTimeModule, measureModule, detectionModule);
 
         // Create Room Monitoring Service
         var roomMonitoringService = RoomMonitoringService.of(

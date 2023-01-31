@@ -1,4 +1,7 @@
 {
     "java.configuration.updateBuildConfiguration": "automatic",
-    "java.checkstyle.configuration": "${workspaceFolder}/config/checkstyle/checkstyle.xml"
+    "java.checkstyle.configuration": "${workspaceFolder}/config/checkstyle/checkstyle.xml",
+    "files.watcherExclude": {
+        "**/target": true
+    }
 }
