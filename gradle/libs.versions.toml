@@ -14,6 +14,7 @@ pi4j-plugin-raspberrypi = { module = "io.github.meboo.pi4j:pi4j-plugin-raspberry
 pi4j-plugin-pigpio = { module = "io.github.meboo.pi4j:pi4j-plugin-pigpio", version.ref = "pi4j" }
 pi4j-plugin-linuxfs = { module = "io.github.meboo.pi4j:pi4j-plugin-linuxfs", version.ref = "pi4j" }
 pi4j-test = { module = "io.github.meboo.pi4j:pi4j-test", version.ref = "pi4j" }
+org-json = { module = "org.json:json", version = "20220924" }
 
 jsch = { module = "com.jcraft:jsch", version = "0.1.44-1" }
 

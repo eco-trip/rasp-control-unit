@@ -10,6 +10,7 @@ repositories {
 
 dependencies {
     testImplementation(libs.junit.jupiter)
+    implementation(libs.org.json)
 }
 
 tasks.withType<Test> {
