@@ -2,6 +2,7 @@ package io.github.ecotrip.execution.engine;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -49,6 +50,11 @@ public class EngineFactory {
                             .thenCompose(t -> submitAndRepeat(job, t, repetitions - 1, delayInSeconds));
                 }
                 return accumulator;
+            }
+
+            @Override
+            public Executor getContext() {
+                return executor;
             }
         };
     }
