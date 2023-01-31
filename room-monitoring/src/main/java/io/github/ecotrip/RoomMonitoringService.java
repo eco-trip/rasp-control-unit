@@ -12,8 +12,10 @@ import io.github.ecotrip.execution.Execution;
 import io.github.ecotrip.execution.Futures;
 import io.github.ecotrip.execution.engine.Engine;
 import io.github.ecotrip.measure.CombinableMeasure;
+import io.github.ecotrip.pattern.Observer;
 import io.github.ecotrip.sensor.Detection;
 import io.github.ecotrip.sensor.DetectionFactory;
+import io.github.ecotrip.token.Token;
 import io.github.ecotrip.usecase.ConsumptionUseCases;
 import io.github.ecotrip.usecase.EnvironmentUseCases;
 
@@ -21,7 +23,7 @@ import io.github.ecotrip.usecase.EnvironmentUseCases;
  * Contains the logic necessary to collect the data from the sensors, serialize
  * the final {@link Detection} and send it through an {@link OutputAdapter}.
  */
-public class RoomMonitoringService {
+public class RoomMonitoringService implements Observer<Token> {
     private static final int DEFAULT_DETECT_INTERVAL_SEC = 5;
     private static final int DEFAULT_DETECT_INTERVAL_MILLIS = Execution.SECOND_IN_MILLIS * DEFAULT_DETECT_INTERVAL_SEC;
     private final ConsumptionUseCases<UUID> consumptionUseCases;
@@ -32,6 +34,7 @@ public class RoomMonitoringService {
     private final Serializer<DetectionWrapper> serializer;
     private int detectionInterval;
     private int consumptionRepetitions;
+    private String stayId;
 
     private RoomMonitoringService(final Engine engine,
                                   final ConsumptionUseCases<UUID> consumptionUseCases,
@@ -78,7 +81,7 @@ public class RoomMonitoringService {
         var mergedDetection = detections.stream().reduce(detectionFactory::merge);
         if (mergedDetection.isPresent()) {
             var message = this.serializer.serialize(
-                    DetectionWrapper.of(mergedDetection.get(), DEFAULT_DETECT_INTERVAL_SEC));
+                    DetectionWrapper.of(mergedDetection.get(), DEFAULT_DETECT_INTERVAL_SEC, stayId));
             return outputAdapter.sendMessage(message)
                     .thenRun(() -> Execution.logsInfo("Send message: " + message));
         }
@@ -118,5 +121,10 @@ public class RoomMonitoringService {
                                                     final Serializer<DetectionWrapper> serializer) {
         return new RoomMonitoringService(engine, consumptionUseCases, environmentUseCases, detectionFactory,
                 outputAdapter, serializer);
+    }
+
+    @Override
+    public void notify(final Token token) {
+        this.stayId = JwtParser.getPayload(token.getValue()).getString("stayId");
     }
 }

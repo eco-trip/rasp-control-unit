@@ -32,6 +32,7 @@ public class DetectionSerializer extends StdSerializer<DetectionWrapper> {
         jgen.writeObjectField("identifier", detection.getIdentifier());
         jgen.writeObjectField("timestamp", detection.getDetectionTime());
         jgen.writeObjectField("sample_duration", data.getSampleDuration());
+        jgen.writeObjectField("stayId", data.getStayId());
         jgen.writeObjectFieldStart("measures");
         for (Measure measure : detection.getMeasures()) {
             jgen.writeNumberField(measure.getType().getName(), Double.parseDouble(df.format(measure.getValue())));

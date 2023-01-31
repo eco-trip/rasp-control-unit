@@ -21,6 +21,7 @@ dependencies {
     implementation(project(":core"))
 //    implementation(libs.jsch)
 //    implementation(libs.bundles.slf4j)
+    implementation(libs.org.json)
     implementation(libs.bundles.pi4j)
     testImplementation(libs.pi4j.test)
     testImplementation(libs.mockito)

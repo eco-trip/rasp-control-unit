@@ -110,7 +110,6 @@ public class Application {
         var authorizationService = AuthorizationService.of(engine2, authorizationUseCases);
         awsAdapter.addObserver(authorizationService);
 
-        // roomMonitoringService.setDetectionInterval(1);
         awsAdapter.connect()
                 .thenCompose(u -> CompletableFuture.allOf(roomMonitoringService.start(), authorizationService.start()))
                 .exceptionally(t -> {
