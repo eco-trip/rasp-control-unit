@@ -15,21 +15,20 @@ import io.github.ecotrip.AuthorizationService;
 import io.github.ecotrip.Generated;
 import io.github.ecotrip.RoomMonitoringService;
 import io.github.ecotrip.adapter.AnalogChannel;
+import io.github.ecotrip.adapter.DetectionWrapper;
 import io.github.ecotrip.adapter.Serializer;
 import io.github.ecotrip.aws.AwsAdapter;
 import io.github.ecotrip.execution.engine.Engine;
 import io.github.ecotrip.execution.engine.EngineFactory;
-import io.github.ecotrip.measure.Measure;
 import io.github.ecotrip.measure.ambient.Temperature;
 import io.github.ecotrip.measure.water.FlowRate;
 import io.github.ecotrip.nfc.Pn532Controller;
 import io.github.ecotrip.nfc.Pn532NfcAdapter;
 import io.github.ecotrip.nfc.channel.Pn532Channel;
 import io.github.ecotrip.object.Pair;
-import io.github.ecotrip.sensor.Detection;
 import io.github.ecotrip.sensor.DetectionFactory;
+import io.github.ecotrip.serializer.DetectionSerializer;
 import io.github.ecotrip.serializer.JsonSerializer;
-import io.github.ecotrip.serializer.MeasureSerializer;
 import io.github.ecotrip.usecase.AuthorizationUseCases;
 import io.github.ecotrip.usecase.ConsumptionUseCases;
 import io.github.ecotrip.usecase.EnvironmentUseCases;
@@ -47,14 +46,15 @@ public class Application {
 
     /**
      * main
-     * @param args
+     *
+     * @param args an array of strings representing the command line arguments passed to the program
      */
     public static void main(String[] args) {
         var pi4j = Pi4J.newAutoContext();
 
         // Build sensors and set configurationsAWSIotTimeoutException
         var detectionFactory = DetectionFactory.of(UUID::randomUUID);
-        var sensorFactory = new DeviceFactory<>(pi4j, detectionFactory , UUID::randomUUID);
+        var sensorFactory = new DeviceFactory<>(pi4j, detectionFactory, UUID::randomUUID);
         var bh1750 = sensorFactory.createBH1750(0x23, I2C_BUS_ONE);
         var ads1105 = sensorFactory.createAds1105(0x48, I2C_BUS_ONE);
 
@@ -85,8 +85,10 @@ public class Application {
 
         // Configure Serializer
         var javaTimeModule = new JavaTimeModule();
-        var measureModule = new SimpleModule().addSerializer(Measure.class, new MeasureSerializer());
-        Serializer<Detection<UUID>> serializer = JsonSerializer.of(javaTimeModule, measureModule);
+        var detectionModule = new SimpleModule()
+                .addSerializer(DetectionWrapper.class, new DetectionSerializer(DetectionWrapper.class));
+
+        Serializer<DetectionWrapper> serializer = JsonSerializer.of(javaTimeModule, detectionModule);
 
         // Create Room Monitoring Service
         var roomMonitoringService = RoomMonitoringService.of(

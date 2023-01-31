@@ -7,6 +7,7 @@ group = "io.github.ecotrip"
 
 application {
     mainClass.set("Application")
+    applicationDefaultJvmArgs = listOf("-Djava.util.concurrent.ForkJoinPool.common.parallelism=8")
 }
 
 repositories {

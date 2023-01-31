@@ -1,6 +1,7 @@
 package io.github.ecotrip.serializer;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
@@ -10,7 +11,7 @@ import io.github.ecotrip.Generated;
 import io.github.ecotrip.measure.Measure;
 
 /**
- * Serializer for measures
+ * Serializer for {@link Measure}
  */
 @Generated
 public class MeasureSerializer extends StdSerializer<Measure> {
@@ -25,8 +26,9 @@ public class MeasureSerializer extends StdSerializer<Measure> {
 
     @Override
     public void serialize(Measure value, JsonGenerator jsonGenerator, SerializerProvider provider) throws IOException {
+        var df = new DecimalFormat("#.00");
         jsonGenerator.writeStartObject();
-        jsonGenerator.writeNumberField(value.getType().getName(), value.getValue());
+        jsonGenerator.writeNumberField(value.getType().getName(), Double.parseDouble(df.format(value.getValue())));
         jsonGenerator.writeEndObject();
     }
 }

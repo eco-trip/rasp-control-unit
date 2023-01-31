@@ -16,7 +16,6 @@ import io.github.ecotrip.execution.engine.EngineFactory;
 import io.github.ecotrip.measure.ambient.Temperature;
 import io.github.ecotrip.measure.energy.Current;
 import io.github.ecotrip.measure.water.FlowRate;
-import io.github.ecotrip.sensor.Detection;
 import io.github.ecotrip.sensor.DetectionFactory;
 import io.github.ecotrip.usecase.ConsumptionUseCases;
 import io.github.ecotrip.usecase.EnvironmentUseCases;
@@ -51,10 +50,10 @@ public class RoomMonitoringServiceTest {
         var payload = new AtomicReference<>("");
 
         var service = RoomMonitoringService.of(engine, consumptionUseCases, environmentUseCases,
-                detectionFactory, (topic, msg) -> {
+                detectionFactory, msg -> {
                     payload.set(msg);
                     return CompletableFuture.completedFuture(null);
-                }, Detection::toString);
+                }, element -> element.getDetection().toString());
         service.setDetectionInterval(Execution.SECOND_IN_MILLIS * 2);
 
         var fut = service.start();
