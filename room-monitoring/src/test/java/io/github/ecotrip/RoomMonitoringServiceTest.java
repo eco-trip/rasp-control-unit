@@ -1,5 +1,7 @@
 package io.github.ecotrip;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -17,8 +19,6 @@ import io.github.ecotrip.measure.water.FlowRate;
 import io.github.ecotrip.sensor.DetectionFactory;
 import io.github.ecotrip.usecase.ConsumptionUseCases;
 import io.github.ecotrip.usecase.EnvironmentUseCases;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
 public class RoomMonitoringServiceTest {

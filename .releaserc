@@ -117,6 +117,15 @@
 		["@semantic-release/github", {
             "assets":"*/build/libs/*.jar"
         }],
-		"@semantic-release/git"
+		"@semantic-release/git",
+		"gradle-semantic-release-plugin",
+        [
+            "@semantic-release/git",
+            {
+                "assets": [
+                    "gradle.properties"
+                ]
+            }
+        ]
 	]
 }
