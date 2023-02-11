@@ -58,20 +58,25 @@ public class Application {
         var bh1750 = sensorFactory.createBH1750(0x23, I2C_BUS_ONE);
         var ads1105 = sensorFactory.createAds1105(0x48, I2C_BUS_ONE);
 
-        var ntc3950 = sensorFactory.createNtc3950(() -> ads1105.getData(AnalogChannel.A0_IN),
+        var ntc3950Hot = sensorFactory.createNtc3950(() -> ads1105.getData(AnalogChannel.A0_IN),
                 Temperature.Environment.HOT_WATER_PIPE);
+        var ntc3950Cold = sensorFactory.createNtc3950(() -> ads1105.getData(AnalogChannel.A1_IN),
+                Temperature.Environment.COLD_WATER_PIPE);
         var acs712 = sensorFactory.createAcs172(() -> ads1105.getData(AnalogChannel.A2_IN));
-        var chy7 = sensorFactory.createChy7(27, FlowRate.FlowRateType.HOT);
+        var chy7Hot = sensorFactory.createChy7(27, FlowRate.FlowRateType.HOT);
+        var chy7Cold = sensorFactory.createChy7(22, FlowRate.FlowRateType.COLD);
         var dht22 = sensorFactory.createDht22(17);
 
         // Create use cases
         var consumptionUseCases = new ConsumptionUseCases.Builder<UUID>()
-                .setHotFlowRateSensor(chy7)
+                .setHotFlowRateSensor(chy7Hot)
+                .setColdFlowRateSensor(chy7Cold)
                 .setCurrentSensor(acs712)
                 .build();
         var environmentUseCases = new EnvironmentUseCases.Builder<UUID>()
                 .setBrightnessSensor(bh1750)
-                .setHotWaterTemperatureSensor(ntc3950)
+                .setHotWaterTemperatureSensor(ntc3950Hot)
+                .setColdWaterTemperatureSensor(ntc3950Cold)
                 .setTemperatureAndHumiditySensor(dht22)
                 .build();
 

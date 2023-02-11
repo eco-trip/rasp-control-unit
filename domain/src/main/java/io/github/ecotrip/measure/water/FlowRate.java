@@ -21,7 +21,7 @@ public class FlowRate extends CombinableMeasure {
 
     @Override
     protected CombinableMeasure combine(CombinableMeasure with) {
-        return FlowRate.of((getValue() + with.getValue()) / 2, toFlowRateType(getType()));
+        return FlowRate.of((getValue() + with.getValue()), toFlowRateType(getType()));
     }
 
     /**

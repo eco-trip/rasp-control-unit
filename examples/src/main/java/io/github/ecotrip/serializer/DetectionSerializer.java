@@ -9,6 +9,8 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
 import io.github.ecotrip.adapter.DetectionWrapper;
 import io.github.ecotrip.measure.Measure;
+import io.github.ecotrip.measure.MeasureType;
+import io.github.ecotrip.measure.energy.Current;
 
 /**
  * {@link DetectionSerializer} is a custom serializer for the class {@link DetectionWrapper}.
@@ -35,7 +37,9 @@ public class DetectionSerializer extends StdSerializer<DetectionWrapper> {
         jgen.writeObjectField("stayId", data.getStayId());
         jgen.writeObjectFieldStart("measures");
         for (Measure measure : detection.getMeasures()) {
-            jgen.writeNumberField(measure.getType().getName(), Double.parseDouble(df.format(measure.getValue())));
+            var measureValue = measure.getType().equals(MeasureType.CURRENT)
+                    ? measure.getValue() * Current.AC_IN_VOLT : measure.getValue();
+            jgen.writeNumberField(measure.getType().getName(), Double.parseDouble(df.format(measureValue)));
         }
         jgen.writeEndObject();
         jgen.writeEndObject();

@@ -20,8 +20,8 @@ import io.github.ecotrip.sensor.Sensor;
  */
 @Generated
 public class AcsSensor<ID> extends Sensor<ID> {
-    private static final double CURRENT_THRESHOLD = 0.4;
-    private static final double CURRENT_OFFSET = 0.4;
+    private static final double CURRENT_THRESHOLD = 0; // 0.4
+    private static final double CURRENT_OFFSET = 0;
     private static final int CALIBRATION_PERIODS = 25;
     private static final int AC_FREQUENCY = 50;
     private static final Voltage VOLTAGE_FALLBACK = Voltage.of(0);
@@ -69,21 +69,25 @@ public class AcsSensor<ID> extends Sensor<ID> {
      * Determines and set the voltage value at 0A current
      */
     private void calibrate() {
+        Double middle = configuration.referenceVoltage.getValue() / 2;
+
         channel.get(); //First read used to clean the channel
         Optional<Voltage> avg = Optional.empty();
         while (avg.isEmpty()) {
-            avg = getAvgVoltage(VOLTAGE_FALLBACK, CALIBRATION_PERIODS);
+            avg = getAvgVoltage(Voltage.of(middle), CALIBRATION_PERIODS);
         }
-        voltageAtZero = avg.get();
+        voltageAtZero = Voltage.of(avg.get().getValue() + middle);
     }
 
     /**
      * @return current in amphs
      */
     private Current computeCurrentAC() {
-        var avg = getAvgVoltage(voltageAtZero, 1);
-        Double currentValue = avg.orElse(VOLTAGE_FALLBACK).getValue() * configuration.referenceVoltage.getValue()
+        var avg = getAvgVoltage(voltageAtZero, 1).orElse(VOLTAGE_FALLBACK).getValue();
+
+        Double currentValue = avg
                     / configuration.scaleFactor.value - CURRENT_OFFSET;
+
         return Current.of(currentValue > CURRENT_THRESHOLD ? currentValue : 0.0);
     }
 
@@ -91,23 +95,36 @@ public class AcsSensor<ID> extends Sensor<ID> {
         var period = Execution.SECOND_IN_MICRO / AC_FREQUENCY;
         var start = Execution.instantInMicros();
 
-        var totalVoltage = 0.0;
+        // var totalVoltage = 0.0;
         var numberOfMeasurements = 0;
-        var previousValue = 0.0;
+        var maxVoltage = 0.0;
+        // var previousValue = 0.0;
+
+        /*
+         * 2 versioni:
+         * 1. faccio la media dei valori
+         * 2. cerco il picco ... usiamo questa adesso
+         */
 
         while (Execution.instantInMicros() - start < period * periods) {
             var currentValue = channel.get().getValue();
-            if (Math.abs(currentValue - previousValue) > Double.MIN_VALUE) {
-                var voltage = currentValue - offset.getValue();
-                totalVoltage += voltage * voltage;
-                numberOfMeasurements++;
-                previousValue = currentValue;
+
+            // if (Math.abs(currentValue - previousValue) > Double.MIN_VALUE) {
+            var voltage = Math.abs(currentValue - offset.getValue());
+            // System.out.println(currentValue + " / " + offset.getValue() + " / "  + voltage);
+            if (voltage > maxVoltage) {
+                maxVoltage = voltage;
             }
+
+            //totalVoltage += Math.abs(voltage); // * voltage;
+            numberOfMeasurements++;
+            // previousValue = currentValue;
+            // }
         }
 
         return numberOfMeasurements < MIN_SAMPLES * periods
             ? Optional.empty()
-            : Optional.of(Voltage.of(Math.sqrt(totalVoltage / numberOfMeasurements)));
+            : Optional.of(Voltage.of(maxVoltage)); // totalVoltage / numberOfMeasurements
     }
 
     /**
