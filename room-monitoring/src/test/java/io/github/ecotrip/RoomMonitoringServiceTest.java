@@ -18,6 +18,8 @@ import io.github.ecotrip.sensor.DetectionFactory;
 import io.github.ecotrip.usecase.ConsumptionUseCases;
 import io.github.ecotrip.usecase.EnvironmentUseCases;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 @ExtendWith(MockitoExtension.class)
 public class RoomMonitoringServiceTest {
     @Test
@@ -58,12 +60,9 @@ public class RoomMonitoringServiceTest {
         var fut = service.start();
         Execution.safeSleep(interval);
 
-        // var expCurrent = Current.of(current.getValue());
-        // var expHotFlowRate = Current.of(hotFlowRate.getValue());
-
-        // assertTrue(payload.get().contains(expCurrent.toString()));
-        // assertTrue(payload.get().contains(expHotFlowRate.toString()));
-        // assertTrue(payload.get().contains(temperature.toString()));
+        assertTrue(payload.get().contains(current.toString()));
+        assertTrue(payload.get().contains(hotFlowRate.toString()));
+        assertTrue(payload.get().contains(temperature.toString()));
         fut.complete(null);
         fut.join();
     }
