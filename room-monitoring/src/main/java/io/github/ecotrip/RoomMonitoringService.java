@@ -1,8 +1,11 @@
 package io.github.ecotrip;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import io.github.ecotrip.adapter.DetectionWrapper;
@@ -12,6 +15,10 @@ import io.github.ecotrip.execution.Execution;
 import io.github.ecotrip.execution.Futures;
 import io.github.ecotrip.execution.engine.Engine;
 import io.github.ecotrip.measure.CombinableMeasure;
+import io.github.ecotrip.measure.Measure;
+import io.github.ecotrip.measure.MeasureType;
+import io.github.ecotrip.measure.energy.Current;
+import io.github.ecotrip.measure.water.FlowRate;
 import io.github.ecotrip.pattern.Observer;
 import io.github.ecotrip.sensor.Detection;
 import io.github.ecotrip.sensor.DetectionFactory;
@@ -24,8 +31,18 @@ import io.github.ecotrip.usecase.EnvironmentUseCases;
  * the final {@link Detection} and send it through an {@link OutputAdapter}.
  */
 public class RoomMonitoringService implements Observer<Token> {
-    private static final int DEFAULT_DETECT_INTERVAL_SEC = 5;
+    /**
+     * Default sampling interval
+     */
+    public static final int DEFAULT_DETECT_INTERVAL_SEC = 5;
     private static final int DEFAULT_DETECT_INTERVAL_MILLIS = Execution.SECOND_IN_MILLIS * DEFAULT_DETECT_INTERVAL_SEC;
+    private static final Map<MeasureType, Function<Double, Measure>> measureMap;
+    static {
+        measureMap = new HashMap<>();
+        measureMap.put(MeasureType.CURRENT, Current::of);
+        measureMap.put(MeasureType.COLD_FLOW_RATE, v -> FlowRate.of(v, FlowRate.FlowRateType.COLD));
+        measureMap.put(MeasureType.HOT_FLOW_RATE, v -> FlowRate.of(v, FlowRate.FlowRateType.HOT));
+    }
     private final ConsumptionUseCases<UUID> consumptionUseCases;
     private final EnvironmentUseCases<UUID> environmentUseCases;
     private final DetectionFactory<UUID> detectionFactory;
@@ -97,10 +114,18 @@ public class RoomMonitoringService implements Observer<Token> {
     }
 
     private Detection<UUID> computeAverage(final Detection<UUID> detection) {
-        var measure = detection.getMeasures().stream()
+        var optMeasure = detection.getMeasures().stream()
                 .map(m -> (CombinableMeasure) m)
                 .reduce(CombinableMeasure::checkAndCombine);
-        return measure.isPresent() ? detectionFactory.create(List.of(measure.get())) : detectionFactory.createEmpty();
+
+        if (optMeasure.isEmpty()) {
+            return detectionFactory.createEmpty();
+        }
+
+        var measureType = optMeasure.get().getType();
+        double measureValue = optMeasure.get().getValue() / ((double)detectionInterval / Execution.SECOND_IN_MILLIS);
+
+        return detectionFactory.create(List.of(measureMap.get(measureType).apply(measureValue)));
     }
 
     /**
@@ -114,11 +139,11 @@ public class RoomMonitoringService implements Observer<Token> {
      * @return the instance of {@link RoomMonitoringService}.
      * */
     public static RoomMonitoringService of(final Engine engine,
-                                                    final ConsumptionUseCases<UUID> consumptionUseCases,
-                                                    final EnvironmentUseCases<UUID> environmentUseCases,
-                                                    final DetectionFactory<UUID> detectionFactory,
-                                                    final OutputAdapter<String, String> outputAdapter,
-                                                    final Serializer<DetectionWrapper> serializer) {
+                                           final ConsumptionUseCases<UUID> consumptionUseCases,
+                                           final EnvironmentUseCases<UUID> environmentUseCases,
+                                           final DetectionFactory<UUID> detectionFactory,
+                                           final OutputAdapter<String, String> outputAdapter,
+                                           final Serializer<DetectionWrapper> serializer) {
         return new RoomMonitoringService(engine, consumptionUseCases, environmentUseCases, detectionFactory,
                 outputAdapter, serializer);
     }

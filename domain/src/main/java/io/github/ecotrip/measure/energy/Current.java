@@ -7,6 +7,10 @@ import io.github.ecotrip.measure.MeasureType;
  * Current measure in amps
  */
 public class Current extends CombinableMeasure {
+    /**
+     * used to convert current in Watt
+     */
+    public static final double AC_IN_VOLT = 220;
 
     private Current(final double value) {
         super(value, MeasureType.CURRENT);
