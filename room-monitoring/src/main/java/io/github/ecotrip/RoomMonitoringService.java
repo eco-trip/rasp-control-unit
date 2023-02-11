@@ -123,7 +123,7 @@ public class RoomMonitoringService implements Observer<Token> {
         }
 
         var measureType = optMeasure.get().getType();
-        double measureValue = optMeasure.get().getValue() / ((double)detectionInterval / Execution.SECOND_IN_MILLIS);
+        double measureValue = optMeasure.get().getValue() / ((double) detectionInterval / Execution.SECOND_IN_MILLIS);
 
         return detectionFactory.create(List.of(measureMap.get(measureType).apply(measureValue)));
     }
