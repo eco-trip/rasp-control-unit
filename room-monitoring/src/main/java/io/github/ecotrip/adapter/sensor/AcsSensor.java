@@ -112,8 +112,9 @@ public class AcsSensor<ID> extends Sensor<ID> {
             // if (Math.abs(currentValue - previousValue) > Double.MIN_VALUE) {
             var voltage = Math.abs(currentValue - offset.getValue());
             // System.out.println(currentValue + " / " + offset.getValue() + " / "  + voltage);
-            if (voltage > maxVoltage)
+            if (voltage > maxVoltage) {
                 maxVoltage = voltage;
+            }
 
             //totalVoltage += Math.abs(voltage); // * voltage;
             numberOfMeasurements++;
