@@ -27,7 +27,7 @@ dependencies {
     implementation(project(":core"))
     implementation(project(":room-monitoring"))
     implementation(project(":authorization"))
-    implementation("org.slf4j:slf4j-api:2.0.0-alpha1")
+    implementation("org.slf4j:slf4j-api:2.0.6")
     implementation("org.slf4j:slf4j-simple:2.0.0-alpha1")
     implementation("io.github.meboo.pi4j:pi4j-core:2.2.0-issue26")
     implementation("io.github.meboo.pi4j:pi4j-plugin-raspberrypi:2.2.0-issue26")
