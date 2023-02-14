@@ -1,4 +1,10 @@
-<h1 align="center">Rasp Control Unit</h1>
+<h1 align="center">
+
+<img src="https://github.com/eco-trip/SC-report/blob/main/images/logo.png?raw=true"  width=50% height=50%>
+
+Rasp Control Unit
+
+</h1>
 
 <div align="center">
 
@@ -25,11 +31,19 @@ Modules are organized following the [Hexagonal
 architecture](https://en.wikipedia.org/wiki/Hexagonal_architecture_(software)) pattern. This way the
 components are loosely coupled.
 
+<div align="center">
+
 ![Hexagonal architecture](https://github.com/eco-trip/LSS-report/blob/main/src/images/cl-architecture.png?raw=true)
+
+</div>
 
 A complete overview of the modules and their dependencies is provided by the following diagram.
 
-![Module dependencies diagram](https://github.com/eco-trip/LSS-report/blob/feature/devops/src/images/gradle-multi-build.png?raw=true)
+<div align="center">
+
+<img src="https://github.com/eco-trip/LSS-report/blob/feature/devops/src/images/gradle-multi-build.png?raw=true"  width=65% height=65%>
+
+</div>
 
 The main modules are the following:
 
@@ -50,3 +64,8 @@ The main modules are the following:
     --thing_name <Control-unit-name>
 '
 ```
+
+## Project resources
+- all components of Ecotrip are placed within an [organization](https://github.com/eco-trip)
+- source code and jars can be found in the release [section](https://github.com/eco-trip/rasp-control-unit/releases)
+- the project report can be found at the following [link](https://github.com/eco-trip/LSS-report)
