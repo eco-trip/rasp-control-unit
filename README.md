@@ -41,7 +41,7 @@ A complete overview of the modules and their dependencies is provided by the fol
 
 <div align="center">
 
-<img src="https://github.com/eco-trip/LSS-report/blob/feature/devops/src/images/gradle-multi-build.png?raw=true"  width=65% height=65%>
+<img src="https://github.com/eco-trip/LSS-report/blob/main/src/images/gradle-multi-build.png?raw=true"  width=55% height=55%>
 
 </div>
 
