@@ -6,7 +6,6 @@ on:
       - '.gitignore'
       - 'LICENSE'
       - 'README.md'
-  pull_request:
 
 env:
   GH_PACKAGES_USERNAME: meboo
