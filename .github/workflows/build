@@ -1,0 +1,22 @@
+name: CI/CD
+on:
+  pull_request:
+    paths-ignore:
+      - '.gitignore'
+      - 'LICENSE'
+      - 'README.md'
+
+env:
+  GH_PACKAGES_USERNAME: meboo
+  GH_PACKAGES_TOKEN: ${{ secrets.GH_PACKAGES_TOKEN }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.MEBBOT }}
+      - uses: DanySK/build-check-deploy-gradle-action@2.1.5
+          
