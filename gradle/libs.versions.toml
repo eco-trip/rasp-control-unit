@@ -6,7 +6,7 @@ pi4j = "2.2.0-issue26"
 [libraries]
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
 spotbugs = { module = "gradle.plugin.com.github.spotbugs.snom:spotbugs-gradle-plugin", version = "4.7.2"}
-mockito = { module = "org.mockito:mockito-junit-jupiter", version = "4.6.1" }
+mockito = { module = "org.mockito:mockito-junit-jupiter", version = "5.2.0" }
 slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
 slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4j" }
 pi4j-core = { module = "io.github.meboo.pi4j:pi4j-core", version.ref = "pi4j" }
