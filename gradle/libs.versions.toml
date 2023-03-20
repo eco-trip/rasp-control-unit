@@ -23,4 +23,4 @@ slf4j = ["slf4j-api", "slf4j-simple"]
 pi4j = ["pi4j-core", "pi4j-plugin-raspberrypi", "pi4j-plugin-pigpio", "pi4j-plugin-linuxfs"]
 
 [plugins]
-gradle-enterprise = { id = "com.gradle.enterprise", version = "3.10" }
+gradle-enterprise = { id = "com.gradle.enterprise", version = "3.12.5" }
