@@ -40,7 +40,7 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-databind:2.12.7")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.7")
     implementation("commons-codec:commons-codec:1.15")
-    implementation("software.amazon.awssdk.iotdevicesdk:aws-iot-device-sdk:1.10.1")
+    implementation("software.amazon.awssdk.iotdevicesdk:aws-iot-device-sdk:1.12.0")
 }
 
 spotbugs {
