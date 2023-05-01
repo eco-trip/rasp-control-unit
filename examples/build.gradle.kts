@@ -35,7 +35,7 @@ dependencies {
     implementation("io.github.meboo.pi4j:pi4j-plugin-linuxfs:2.2.0-issue26")
     implementation("com.jcraft:jsch:0.1.44-1")
     testImplementation("io.github.meboo.pi4j:pi4j-test:2.2.0-issue26")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.3")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.12.7")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.7")
